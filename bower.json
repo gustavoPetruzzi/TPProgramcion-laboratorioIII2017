@@ -1,0 +1,21 @@
+{
+  "name": "TPProgramcion-laboratorioIII2017",
+  "homepage": "https://github.com/gustavopetruzzi/TPProgramcion-laboratorioIII2017",
+  "authors": [
+    "gustavoPetruzzi <gustavopetruzzi19@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1"
+  }
+}
