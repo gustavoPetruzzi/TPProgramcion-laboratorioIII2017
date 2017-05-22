@@ -4,9 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <script src="bower_components/jquery/dist/jquery.js"> </script>
+    <script src="js/index.js"> </script>
     <title>Estacionamiento</title>
 </head>
 <body>
-    
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <a class="navbar-brand" href="#">Estacionamiento</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#" onclick="return onclic">Page 1</a></li>
+                <li><a href="#">Page 2</a></li>
+                <li><a href="#">Page 3</a></li>
+            </ul>
+
+            <div id="log" class="col-sm-4 col-md-4 pull-right">
+                <form class="form-signin navbar-form" >
+                    <input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuario">
+                    <input type="password" class="form-control" placeholder="password" name="pass" id="pass">
+                    <button class="btn btn-default" type="button" id="login"> Login </button>
+                </form>
+            </div>
+    </nav>
 </body>
 </html>
