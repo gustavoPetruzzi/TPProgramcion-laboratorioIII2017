@@ -7,15 +7,19 @@ $(document).ready(function(){
 
 
 function logueado(data){
-    $("#log").html(data);
-    $("#log").attr('id', 'logout');
-    $("#desLogin").click(function(){
-        $.ajax({
-            url:"php/administracion.php",
-            type:"POST",
-            data: {accion: "desloguear"},
-        }).then(deslogueado, error)
-    })  
+    $("#navbar-nav").removeClass("hidden");
+    if(data.exito){
+        $("#log").html(data);
+        $("#navbar-nav").find("a").removeClass("hidden");
+        $("#log").attr('id', 'logout');
+        $("#desLogin").click(function(){
+            $.ajax({
+                url:"php/administracion.php",
+                type:"POST",
+                data: {accion: "desloguear"},
+            }).then(deslogueado, error)
+        })
+    }  
 }
 
 
@@ -27,6 +31,7 @@ function deslogueado(data){
 }
 function error(data) {
     alert("error");
+    console.info(data);
 }
 
 function loguear(){
@@ -36,7 +41,8 @@ function loguear(){
         $.ajax({
             url: "php/administracion.php",
             type:"POST",
-            data: { accion: "loguear", usuario : usuario, pass: pass}
+            data: { accion: "loguear", usuario : usuario, pass: pass},
+            dataType: 'json'
 
         }).then(logueado, error)
     })
