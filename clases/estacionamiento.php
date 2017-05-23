@@ -10,22 +10,31 @@
     {
         public $pisos;
         public $empleados;
-
         function __construct($cantidadPisos=1, $lugaresPorPiso)
         {
             $this->pisos = array();
             $this->empleados = array();
+            $this->lugaresReservados = array();
             for ($i=0; $i < $cantidadPisos; $i++) {
-                echo "ENTRA";
                 $piso = new piso($lugaresPorPiso);
-                $this->pisos[] = $piso;
+                $this->pisos[$i+1] = $piso;
             }
         }
+        
+        
 
-        function agregarEmpleado($empleado){
+
+
+        public function agregarEmpleado($empleado){
             //VER VALIDACIONES
             $this->empleados[] = $empleado;
         }
+
+        public function agregarAuto($auto,$piso=NULL, $lugar=Null){
+            if(isset($piso))
+
+        }
+
     }
     
 

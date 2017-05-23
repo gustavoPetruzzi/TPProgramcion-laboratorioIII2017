@@ -5,9 +5,10 @@
     class lugar 
     {
         public $auto;
-        function __construct()
+        public $reservado; // bool
+        function __construct($reservado)
         {
-            
+            $this->reservado = $reservado;
         }
         function agregarAuto($auto){
             $this->auto = $auto;
@@ -17,6 +18,7 @@
                 return true;
             }
         }
+
 
     }
     

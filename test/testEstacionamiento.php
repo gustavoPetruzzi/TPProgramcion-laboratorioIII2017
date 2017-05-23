@@ -3,6 +3,6 @@
     $estacionamiento = new estacionamiento(3, 20);
     var_dump($estacionamiento);
     echo "<br>";
-    echo $estacionamiento->pisos[0]->maximo;
+    echo $estacionamiento->pisos[1]->maximo;
 
 ?>
