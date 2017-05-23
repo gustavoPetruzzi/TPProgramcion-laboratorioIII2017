@@ -13,21 +13,36 @@
                     session_start();
                     $_SESSION['usuario'] = $empleadoBase;
                     $_SESSION['sesion'] = rand(1, 999);
-                    $retorno['exito'] = true;
-                    $retorno['data'] = include("../partes/navbar.php");
+                    $retorno['exito'] = empleado::registrarLogin($empleadoBase->id, $_SESSION['sesion']);
                     
                     break;
                 }
             }
-            echo json_encode($retorno);
+            if(!$retorno['exito']){
+                echo json_encode($retorno['exito']);
+            }        
+            else{
+                include("../partes/navbar.php");
+            }            
             
             break;
         case 'desloguear':
             session_start();
-            $_SESSION['usuario'] = null;
-            $_SESSION['sesion'] = null;
-            session_destroy();
-            include("../partes/navbar.php");
+            $retorno['exito'] = false;
+            $sesion = $_SESSION['sesion'];
+            $id = $_SESSION['usuario']->id;
+            $retorno['exito'] = empleado::registrarLogin($id, $sesion, false);
+            
+            
+            if(!$retorno['exito']){
+                echo json_encode($retorno['exito']);
+            }
+            else{
+                $_SESSION['sesion'] = null;
+                $_SESSION['usuario'] = null;
+                session_destroy();
+                include("../partes/navbar.php");    
+            }
             break;
         default:
             # code...

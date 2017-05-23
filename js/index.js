@@ -5,33 +5,42 @@ $(document).ready(function(){
 
 
 
-
+// TODO poner desloguear en una funcion como loguear()
 function logueado(data){
-    $("#navbar-nav").removeClass("hidden");
-    if(data.exito){
+    
+    if(!isJSON(data)){
         $("#log").html(data);
         $("#navbar-nav").find("a").removeClass("hidden");
         $("#log").attr('id', 'logout');
-        $("#desLogin").click(function(){
+        $("#desLogin").click(function(){ // TODO poner desloguear en una funcion como loguear()
             $.ajax({
                 url:"php/administracion.php",
                 type:"POST",
                 data: {accion: "desloguear"},
             }).then(deslogueado, error)
         })
-    }  
+    }
+    else{
+        alert(data);
+    }
 }
 
 
 
 function deslogueado(data){
-    $("#logout").html(data);
-    $("#logout").attr('id', 'log');
-    loguear();
+    if(!isJSON(data)){
+        $("#logout").html(data);
+        $("#logout").attr('id', 'log');
+        loguear();
+    }
+    else{
+        alert(data);
+    }
 }
 function error(data) {
     alert("error");
     console.info(data);
+    console.info(data.data);
 }
 
 function loguear(){
@@ -42,8 +51,16 @@ function loguear(){
             url: "php/administracion.php",
             type:"POST",
             data: { accion: "loguear", usuario : usuario, pass: pass},
-            dataType: 'json'
 
         }).then(logueado, error)
     })
+}
+
+function isJSON(str){
+    try {
+        JSON.parse(str);
+    } catch (error) {
+        return false;
+    }
+    return true;
 }
