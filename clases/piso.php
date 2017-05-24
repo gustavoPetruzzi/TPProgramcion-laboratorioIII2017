@@ -8,35 +8,70 @@
         
         function __construct($cantidadNumero=20)
         {
-            $this->lugares = array();
-            $this->reservado = array();
             $this->maximo = $cantidadNumero;
+            for ($i=0; $i < $cantidadNumero; $i++) {
+                $this->lugares[$i+1] = new lugar();
+            }
         }
         
 
-        private function lugaresLibre(){
-            return $this->maximo - count($this->lugares);
+        public function lugaresLibre(){
+            return $this->maximo - $this->usados();
         }
         
-        public function agregarLugar($numero, $reservado = false){
-            $retorno = false;
+        public function reservar($numero ){
+            $this->lugares[$numero]->reservado = true;
+
+        }
+        public function agregarAuto($auto, $numero=null){
             if($this->lugaresLibre() > 0){
-                if(isset($numero)){
-                    if(!$this->lugares->ocupado()){
-                        
-                    }
-
+                if(isset($numero) && !$this->lugares[$numero]->ocupado()){
+                    $this->lugares[$numero]->auto = $auto;
+                }
+                else{
+                    $this->lugares[$this->buscarLibre()]->auto = $auto;    
                 }
             }
-            return $retorno;
         }
+
+        public function sacarAuto($patente){
+            $retorno = false;
+            foreach ($this->lugares as $key ) {
+                if(isset($lugar) && $lugar->buscar($patente)){
+                    unset()
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         // siempre devuelve un valor porque se usa junto a lugaresLibres.
         private function buscarLibre(){
-            for ($i=0; $i < $this->lugares; $i++) {
-                if(!isset($this->lugares[$i+1])){
+            for ($i=1; $i < $this->maximo+1; $i++) { 
+                if(!$this->lugares[$i]->ocupado()){
                     return $i;
                 }
             }
         }        
+        private function usados(){
+            $usados = 0;
+            foreach ($this->lugares as $lugar ) {
+                if($lugar->ocupado() ){
+                    $usados++;
+                }
+            }
+            return $usados;
+        }
+    }
     
 ?>

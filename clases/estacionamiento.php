@@ -19,6 +19,9 @@
                 $piso = new piso($lugaresPorPiso);
                 $this->pisos[$i+1] = $piso;
             }
+            $this->pisos[1]->reservar(1);
+            $this->pisos[1]->reservar(2);
+            $this->pisos[1]->reservar(3);
         }
         
         
