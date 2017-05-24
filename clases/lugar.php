@@ -10,10 +10,10 @@
         {
             $this->reservado = $reservado;
         }
-        function agregarAuto($auto){
+        public function agregarAuto($auto){
             $this->auto = $auto;
         }
-        function ocupada(){
+        public function ocupado(){
             if(isset($auto)){
                 return true;
             }

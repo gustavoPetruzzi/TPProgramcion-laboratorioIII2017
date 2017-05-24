@@ -14,15 +14,29 @@
         }
         
 
-        public function lugaresLibre(){
+        private function lugaresLibre(){
             return $this->maximo - count($this->lugares);
         }
         
-        public function agregarLugar($reservado = false){
+        public function agregarLugar($numero, $reservado = false){
             $retorno = false;
+            if($this->lugaresLibre() > 0){
+                if(isset($numero)){
+                    if(!$this->lugares->ocupado()){
+                        
+                    }
 
+                }
+            }
             return $retorno;
         }
-        
+        // siempre devuelve un valor porque se usa junto a lugaresLibres.
+        private function buscarLibre(){
+            for ($i=0; $i < $this->lugares; $i++) {
+                if(!isset($this->lugares[$i+1])){
+                    return $i;
+                }
+            }
+        }        
     
 ?>
