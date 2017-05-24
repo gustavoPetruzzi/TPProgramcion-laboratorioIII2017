@@ -3,14 +3,19 @@
      include_once("auto.php");
     class lugar 
     {
-        public $auto;
+        private $auto;
         public $reservado; // bool
         function __construct($reservado=false)
         {
             $this->reservado = $reservado;
         }
         public function agregarAuto($auto){
-            $this->auto = $auto;
+            $retorno = false;
+            if(isset($auto) && !$this->ocupado()){
+                $this->auto = $auto;
+                $retorno = true;
+            }
+            return $retorno;
         }
         public function ocupado(){
             if(isset($this->auto)){
@@ -23,6 +28,9 @@
                 return true;
             }
             return $retorno;
+        }
+        public function sacarAuto(){
+            unset($this->auto);
         }
 
 

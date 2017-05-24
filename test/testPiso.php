@@ -14,6 +14,7 @@
     echo "<br>";
     echo $miPiso->lugaresLibre();
     echo "<br>";
+    echo $miPiso->usados();
     
     
 ?>

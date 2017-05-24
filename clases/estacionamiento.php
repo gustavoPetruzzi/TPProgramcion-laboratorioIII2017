@@ -32,12 +32,53 @@
             //VER VALIDACIONES
             $this->empleados[] = $empleado;
         }
+        
+        public function estacionar($auto,$piso=NULL, $lugar=Null){
+            $retorno['exito'] = false;
+            if(isset($piso) && isset($lugar)){
+                
 
-        public function agregarAuto($auto,$piso=NULL, $lugar=Null){
-            if(isset($piso))
+            }
 
         }
 
+
+
+
+
+
+
+
+
+
+
+
+        
+        private function lugarEnpiso($lugar, $piso = null){
+            $retorno['exito'] = false;
+            $lugarValidado;
+            if(isset($piso)){
+                $lugarValidado = $this->pisos[$piso]->maximo - $lugar;
+                if($lugarValidado >= 0){
+                    $retorno['exito'] = true;
+                    $retorno['lugar'] = $lugarValidado;
+                    
+                }
+            }
+            else{
+                foreach ($this->pisos as $piso ) {
+                    $lugarValidado = $piso->maximo - $lugar;
+                    if($lugarValidado >= 0){
+                        $retorno['exito'] = true;
+                        $retorno['lugar'] = $lugarValidado;
+                        $retorno['piso'] = $piso;
+                        break;
+                    }
+                }
+            }
+            return $retorno;
+        }
+        
     }
     
 
