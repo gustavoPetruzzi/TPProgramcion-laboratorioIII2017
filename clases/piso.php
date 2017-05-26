@@ -5,44 +5,47 @@
     {
         public $lugares;
         public $maximo;
-        
-        function __construct($cantidadNumero=20)
+        private $inicio;
+        //private $cantidad;
+        function __construct($inicio, $cantidad)
         {
-            $this->maximo = $cantidadNumero;
+            $this->maximo = $inicio + $cantidad;
+            $this->cantidad = $cantidad;
             $this->lugares = array();
-            /*
-            for ($i=0; $i < $cantidadNumero; $i++) {
-                $this->lugares[$i+1] = new lugar();
+            $this->inicio = $inicio;
+            
+            for ($i=$inicio; $i < $this->maximo; $i++) {
+                $this->lugares[$i] = new lugar();
             }
-            */
         }
         
 
         public function lugaresLibre(){
-            return $this->maximo - $this->usados();
+            return count($this->lugares) - $this->usados();
         }
         
         public function reservar($numero ){
-            if(isset($this->lugares[$numero])){
+            if(isset($numero)){
                 $this->lugares[$numero]->reservado = true;
             }
-            else{
-                $this->lugares[$numero] = new lugar(true);
-            }
-
 
         }
         public function agregarAuto($auto, $numero=null){
             $retorno['exito'] = false;
             if($this->lugaresLibre() > 0){
                 if(isset($numero)){
-                    $retorno['exito'] = $this->lugares[$numero]->agregarAuto($auto);
-                    if(!$retorno['exito']){
-                        $retorno['mensaje'] = "Lugar ocupado";
+                    if(array_key_exists($numero, $this->lugares)){
+                        $retorno['exito'] = $this->lugares[$numero]->agregarAuto($auto);
+                        if(!$retorno['exito']){
+                            $retorno['mensaje'] = "Lugar ocupado";
+                        }
+                    }
+                    else{
+                        $retorno['mensaje'] = "No se encuentra en el piso";
                     }
                 }
                 else{
-                    $retorno['retorno'] = $this->lugares[$this->buscarLibre()]->agregarAuto($auto);
+                    $retorno['exito'] = $this->lugares[$this->buscarLibre()]->agregarAuto($auto);
                 }
             }
             else{
@@ -53,15 +56,15 @@
         }
 
         public function sacarAuto($patente){
-            $retorno = false;
+            
             foreach ($this->lugares as $lugar ) {
-                if(isset($lugar) && $lugar->buscar($patente)){
+                if($lugar->esta($patente)){
+                    $auto = $lugar->getAuto();
                     $lugar->sacarAuto();
-                    $retorno = true;
-                    break;
+                    return $auto;
                 }
             }
-            return $retorno;
+            return null;
         }
 
 
@@ -78,20 +81,16 @@
 
         // siempre devuelve un valor porque se usa junto a lugaresLibres.
         private function buscarLibre(){
-            for ($i=1; $i < $this->maximo+1; $i++) { 
-                if(isset($this->lugares[$i]) && !$this->lugares[$i]->ocupado()){
-                    return $i;
-                }
-                else{
-                    $this->lugares[$i] = new lugar();
+            for ($i=$this->inicio; $i < $this->maximo; $i++) { 
+                if(!$this->lugares[$i]->ocupado()){
                     return $i;
                 }
             }
         }        
-        public function usados(){
+        private function usados(){
             $usados = 0;
-            foreach ((array) $this->lugares as $lugar ) {
-                if(isset($lugar) && $lugar->ocupado()){
+            foreach ( $this->lugares as $lugar ) {
+                if($lugar->ocupado()){
                     $usados++;
                 }
             }

@@ -22,15 +22,17 @@
                 return true;
             }
         }
-        public function buscar($patente){
-            $retorno = false;
-            if(isset($this->auto) && $this->auto->patente == $patente){
-                return true;
-            }
-            return $retorno;
+        public function getAuto(){
+            return $this->auto;
         }
         public function sacarAuto(){
             unset($this->auto);
+        }
+        public function esta($patente){
+            if(isset($this->auto) && $this->auto->patente == $patente){
+                return true;
+            }
+            return false;
         }
 
 

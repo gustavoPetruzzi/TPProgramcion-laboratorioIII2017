@@ -3,25 +3,27 @@
     include_once("empleado.php");
     include_once("piso.php");
 
-    /**
-     * 
-     */
+
     class estacionamiento 
     {
         public $pisos;
         public $empleados;
-        function __construct($cantidadPisos=1, $lugaresPorPiso)
+        private $precioHora;
+        private $precioEstadia;
+        private $precioMedia;
+        function __construct($arrayDatos,$hora, $media, $estadia)
         {
             $this->pisos = array();
             $this->empleados = array();
-            $this->lugaresReservados = array();
-            for ($i=0; $i < $cantidadPisos; $i++) {
-                $piso = new piso($lugaresPorPiso);
-                $this->pisos[$i+1] = $piso;
+            //$this->lugaresReservados = array();
+            $inicio = 1;
+            $this->precioHora = $hora;
+            $this->precioMedia = $media;
+            $this->precioEstadia = $estadia;
+            foreach ($arrayDatos as $key => $cantidad) {
+                $this->pisos[$key] = new piso($inicio, $cantidad);
+                $inicio+= $cantidad;
             }
-            $this->pisos[1]->reservar(1);
-            $this->pisos[1]->reservar(2);
-            $this->pisos[1]->reservar(3);
         }
         
         
@@ -33,51 +35,41 @@
             $this->empleados[] = $empleado;
         }
         
-        public function estacionar($auto,$piso=NULL, $lugar=Null){
+        public function estacionar($auto,$lugar=NULL, $piso=Null){
             $retorno['exito'] = false;
             if(isset($piso) && isset($lugar)){
-                
-
+                $retorno = $this->pisos[$piso]->agregarAuto($lugar);
+                return $retorno;
             }
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        private function lugarEnpiso($lugar, $piso = null){
-            $retorno['exito'] = false;
-            $lugarValidado;
-            if(isset($piso)){
-                $lugarValidado = $this->pisos[$piso]->maximo - $lugar;
-                if($lugarValidado >= 0){
-                    $retorno['exito'] = true;
-                    $retorno['lugar'] = $lugarValidado;
-                    
+            elseif(isset($lugar)){
+                foreach ($this->pisos as $piso) {
+                    if(array_key_exists($lugar, $piso->lugares)){
+                        $retorno = $piso->agregaAuto($auto, $lugar);
+                    }
                 }
             }
-            else{
+            else {
                 foreach ($this->pisos as $piso ) {
-                    $lugarValidado = $piso->maximo - $lugar;
-                    if($lugarValidado >= 0){
-                        $retorno['exito'] = true;
-                        $retorno['lugar'] = $lugarValidado;
-                        $retorno['piso'] = $piso;
+                    $retorno = $piso->agregarAuto($auto);
+                    if($retorno['exito']){
                         break;
                     }
                 }
             }
             return $retorno;
+
         }
+
+        public function sacarAuto($patente){
+            foreach ($this->pisos as $piso) {
+                $auto = $piso->sacarAuto($patente);
+                if(isset($auto)){
+                    break;
+                }
+            }
+            return $auto;
+        }
+
         
     }
     

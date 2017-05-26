@@ -6,6 +6,7 @@
         public $id;
         public $usuario;
         private $_pass;
+        public $activo;
 
         function __construct($usuario = NULL, $pass = NULL)
         {
@@ -58,6 +59,18 @@
             $consulta->execute();
             $empleado = $consulta->fetch();
             return $empleado;
+        }
+
+        public static function borrarEmpleado($id){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->retornarConsulta("DELETE FROM empleados WHERE id= :id");
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            if($consulta->execute() > 0){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
 
         public static function registrarLogin($id, $sesion, $entrada = true){
