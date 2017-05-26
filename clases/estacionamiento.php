@@ -35,6 +35,13 @@
             $this->empleados[] = $empleado;
         }
         
+        public function suspenderEmpleado($id){
+            
+        }
+
+
+
+
         public function estacionar($auto,$lugar=NULL, $piso=Null){
             $retorno['exito'] = false;
             if(isset($piso) && isset($lugar)){

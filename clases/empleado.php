@@ -20,7 +20,7 @@
             return $this->_pass;
         }
 
-        private static function guardarEmpleado($empleado){
+        private static function guardarEmpleadoDB($empleado){
             $resultado = false;
             $objetoGuardarDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (usuario, pass)"
