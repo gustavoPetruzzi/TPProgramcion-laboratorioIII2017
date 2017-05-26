@@ -13,10 +13,11 @@
             $this->cantidad = $cantidad;
             $this->lugares = array();
             $this->inicio = $inicio;
-            
+            /*
             for ($i=$inicio; $i < $this->maximo; $i++) {
                 $this->lugares[$i] = new lugar();
             }
+            */
         }
         
 

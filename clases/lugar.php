@@ -5,6 +5,7 @@
     {
         private $auto;
         public $reservado; // bool
+
         function __construct($reservado=false)
         {
             $this->reservado = $reservado;
@@ -29,7 +30,7 @@
             unset($this->auto);
         }
         public function esta($patente){
-            if(isset($this->auto) && $this->auto->patente == $patente){
+            if($this->ocupado() && $this->auto->patente == $patente){
                 return true;
             }
             return false;
