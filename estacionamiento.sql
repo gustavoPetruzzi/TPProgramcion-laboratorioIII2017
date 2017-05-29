@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
--- https://www.phpmyadmin.net/
+-- version 4.5.2
+-- http://www.phpmyadmin.net
 --
--- Servidor: localhost
--- Tiempo de generación: 26-05-2017 a las 06:49:56
--- Versión del servidor: 10.1.22-MariaDB
--- Versión de PHP: 7.0.18
+-- Host: localhost
+-- Generation Time: May 29, 2017 at 10:42 
+-- Server version: 10.1.13-MariaDB
+-- PHP Version: 5.6.23
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -19,13 +17,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `estacionamiento`
+-- Database: `estacionamiento`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `autos`
+-- Table structure for table `autos`
 --
 
 CREATE TABLE `autos` (
@@ -37,7 +35,7 @@ CREATE TABLE `autos` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `empleados`
+-- Table structure for table `empleados`
 --
 
 CREATE TABLE `empleados` (
@@ -48,7 +46,7 @@ CREATE TABLE `empleados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
--- Volcado de datos para la tabla `empleados`
+-- Dumping data for table `empleados`
 --
 
 INSERT INTO `empleados` (`id`, `usuario`, `pass`, `activo`) VALUES
@@ -58,7 +56,7 @@ INSERT INTO `empleados` (`id`, `usuario`, `pass`, `activo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `loginempleados`
+-- Table structure for table `loginempleados`
 --
 
 CREATE TABLE `loginempleados` (
@@ -70,7 +68,7 @@ CREATE TABLE `loginempleados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
--- Volcado de datos para la tabla `loginempleados`
+-- Dumping data for table `loginempleados`
 --
 
 INSERT INTO `loginempleados` (`idempleado`, `dia`, `sesion`, `entrada`, `salida`) VALUES
@@ -79,7 +77,7 @@ INSERT INTO `loginempleados` (`idempleado`, `dia`, `sesion`, `entrada`, `salida`
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `lugares`
+-- Table structure for table `lugares`
 --
 
 CREATE TABLE `lugares` (
@@ -92,7 +90,7 @@ CREATE TABLE `lugares` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `operaciones`
+-- Table structure for table `operaciones`
 --
 
 CREATE TABLE `operaciones` (
@@ -107,7 +105,7 @@ CREATE TABLE `operaciones` (
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `piso`
+-- Table structure for table `piso`
 --
 
 CREATE TABLE `piso` (
@@ -116,25 +114,33 @@ CREATE TABLE `piso` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
--- Índices para tablas volcadas
+-- Dumping data for table `piso`
+--
+
+INSERT INTO `piso` (`numero`, `cantidad`) VALUES
+(1, 10),
+(2, 10),
+(3, 10);
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `empleados`
+-- Indexes for table `empleados`
 --
 ALTER TABLE `empleados`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT de las tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de la tabla `empleados`
+-- AUTO_INCREMENT for table `empleados`
 --
 ALTER TABLE `empleados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;COMMIT;
-
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

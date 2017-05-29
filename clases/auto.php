@@ -31,6 +31,24 @@
             $auto = $consulta->fetchAll(PDO::FETCH_CLASS, "auto");
             return $auto;
         }
+        public static function agregar($auto){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $inAuto = auto::buscar($auto->patente);
+            if($inAuto){
+                $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO autos (patente, color, marca) VALUES (:patente, :color, :marca)");
+                $consulta->bindValue(":patente", $auto->patente, PDO::PARAM_STR);
+                $consulta->bindValue(":color", $auto->color, PDO::PARAM_STR);
+                $consulta->bindValue(":marca", $auto->marca, PDO::PARAM_STR);
+                return $consulta->execute();
+            }
+        }
+
+        public static function sacar($patente){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->retornarConsulta("DELETE FROM autos WHERE patente = :patente");
+            $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
+            return $consulta->execute();
+        }
     }
     
 ?>

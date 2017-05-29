@@ -89,38 +89,6 @@
         }
         
 
-
-
-
-        /*
-        public function agregarAuto($auto){
-            $retorno = false;
-            if(isset($auto) && !$this->ocupado()){
-                $this->auto = $auto;
-                $retorno = true;
-            }
-            return $retorno;
-        }
-        public function ocupado(){
-            if(isset($this->auto)){
-                return true;
-            }
-        }
-        public function getAuto(){
-            return $this->auto;
-        }
-        public function sacarAuto(){
-            unset($this->auto);
-        }
-        public function esta($patente){
-            if($this->ocupado() && $this->auto->patente == $patente){
-                return true;
-            }
-            return false;
-        }
-
-        */
-
     }
     
 ?>

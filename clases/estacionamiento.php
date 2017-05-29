@@ -26,60 +26,7 @@
             }
         }
         
-        
-
-
-
-        public function agregarEmpleado($empleado){
-            //VER VALIDACIONES
-            $this->empleados[] = $empleado;
-        }
-        
-        public function suspenderEmpleado($id){
-            
-        }
-
-
-
-
-        public function estacionar($auto,$lugar=NULL, $piso=Null){
-            $retorno['exito'] = false;
-            if(isset($piso) && isset($lugar)){
-                $retorno = $this->pisos[$piso]->agregarAuto($lugar);
-                return $retorno;
-            }
-            elseif(isset($lugar)){
-                foreach ($this->pisos as $piso) {
-                    if(array_key_exists($lugar, $piso->lugares)){
-                        $retorno = $piso->agregaAuto($auto, $lugar);
-                    }
-                }
-            }
-            else {
-                foreach ($this->pisos as $piso ) {
-                    $retorno = $piso->agregarAuto($auto);
-                    if($retorno['exito']){
-                        break;
-                    }
-                }
-            }
-            return $retorno;
-
-        }
-
-        public function sacarAuto($patente){
-            foreach ($this->pisos as $piso) {
-                $auto = $piso->sacarAuto($patente);
-                if(isset($auto)){
-                    break;
-                }
-            }
-            return $auto;
-        }
-
-        
     }
-    
 
 
 ?>
