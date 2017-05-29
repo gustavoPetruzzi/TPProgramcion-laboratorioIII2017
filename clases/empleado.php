@@ -8,7 +8,7 @@
         private $_pass;
         public $activo;
 
-        function __construct($usuario = NULL, $pass = NULL)
+        function __construct( $usuario = NULL, $pass = NULL)
         {
             if($usuario != NULL && $pass != NULL){
                 $this->usuario = $usuario;
@@ -20,7 +20,13 @@
             return $this->_pass;
         }
 
-        private static function guardarEmpleadoDB($empleado){
+        public static function modificarEmpleado($empleado){
+            $resultado =false;
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =");
+        }
+
+        private static function guardarEmpleado($empleado){
             $resultado = false;
             $objetoGuardarDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (usuario, pass)"

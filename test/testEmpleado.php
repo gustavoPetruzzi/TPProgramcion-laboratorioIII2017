@@ -9,5 +9,5 @@
     echo "<br>";
     */
     $empleados = empleado::traerEmpleados();
-    var_dump($empleados);
+    var_dump($empleados[0]);
 ?>
