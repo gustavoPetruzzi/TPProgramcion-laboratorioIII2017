@@ -31,14 +31,15 @@
             $auto = $consulta->fetchAll(PDO::FETCH_CLASS, "auto");
             return $auto;
         }
-        public static function agregar($auto){
+        public  function agregar(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $inAuto = auto::buscar($auto->patente);
-            if($inAuto){
+            // VER QUE TRAE;
+            if($inAuto == FALSE){
                 $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO autos (patente, color, marca) VALUES (:patente, :color, :marca)");
-                $consulta->bindValue(":patente", $auto->patente, PDO::PARAM_STR);
-                $consulta->bindValue(":color", $auto->color, PDO::PARAM_STR);
-                $consulta->bindValue(":marca", $auto->marca, PDO::PARAM_STR);
+                $consulta->bindValue(":patente", $this->patente, PDO::PARAM_STR);
+                $consulta->bindValue(":color", $this->color, PDO::PARAM_STR);
+                $consulta->bindValue(":marca", $this->marca, PDO::PARAM_STR);
                 return $consulta->execute();
             }
         }

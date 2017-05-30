@@ -2,7 +2,7 @@
     include_once("accesoDatos.php");
     class empleado
     {
-        //public static $proximoId = 1;
+        
         public $id;
         public $usuario;
         private $_pass;
@@ -20,19 +20,21 @@
             return $this->_pass;
         }
 
-        public static function modificarEmpleado($empleado){
-            $resultado =false;
+        public  function modificarEmpleado(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =");
+            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =:usuario, pass=:pass, activo = :activo");
+            $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
+            $consulta->bindValue(":pass", $this->pass, PDO::PARAM_STR);
+            $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
+            return $consulta->execute();
         }
 
-        private static function guardarEmpleado($empleado){
-            $resultado = false;
+        public  function guardarEmpleado(){
             $objetoGuardarDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (usuario, pass)"
                                                              . " VALUES(:usuario, :pass)");
-            $consulta->bindValue(":usuario", $empleado->usuario, PDO::PARAM_STR);
-            $consulta->bindValue(":pass", $empleado->getPass(), PDO::PARAM_STR);
+            $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
+            $consulta->bindValue(":pass", $this->getPass(), PDO::PARAM_STR);
             return $consulta->execute();
         }
 
@@ -54,6 +56,7 @@
             $empleado = $consulta->fetch();
             return $empleado;
         }
+        /*
         //PARA OBTENER ID despues de crearlo.
         private static function buscarEmpleadoUsuarioPass($user, $pass){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
@@ -66,6 +69,7 @@
             $empleado = $consulta->fetch();
             return $empleado;
         }
+        */
 
         public static function borrarEmpleado($id){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
