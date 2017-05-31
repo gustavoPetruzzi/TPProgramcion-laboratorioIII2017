@@ -30,6 +30,9 @@
         public function getPatente(){
             return $this->patente;
         }
+        public function setPatente($patente){
+            $this->patente = $patente;
+        }
         public function getReservado(){
             return $this->reservado;
         }

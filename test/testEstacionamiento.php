@@ -1,8 +1,8 @@
 <?php
     include_once("../clases/estacionamiento.php");
     include_once("../clases/auto.php");
-    $datos = array(5,5,5);
-    $estacionamiento = new estacionamiento($datos, 1,1,1);
+    
+    $estacionamiento = new estacionamiento(10,50,100);
     //var_dump($estacionamiento);
     $auto =new auto("BUD554", "ROJO", "RENAULT");
     $auto2 =new auto("BUD555", "ROJO", "RENAULT");
@@ -11,13 +11,26 @@
     $auto5 =new auto("BUD558", "ROJO", "RENAULT");
     $autoNo =new auto("BUD559", "ROJO", "RENAULT");
     echo "<br>";
-    $estacionamiento->estacionar($auto);
-    var_dump($estacionamiento->pisos[0]->lugares[1]);
+    /*
+    $estacionamiento->estacionar($auto,1);
+    $estacionamiento->estacionar($auto2,2);
+    $estacionamiento->estacionar($auto3,3);
+    */
+    $lugares = estacionamiento::traerLugares();
+    var_dump($lugares[0]->getNumero());
     echo "<br>";
-    echo $estacionamiento->pisos[1]->maximo;
+    var_dump($lugares[0]->getPatente());
     echo "<br>";
-    $autoSacado = $estacionamiento->sacarAuto("BUD554");
-    var_dump($autoSacado);
 
+    var_dump($lugares[1]->getNumero());
+    echo "<br>";
+    var_dump($lugares[1]->getPatente());
+    echo "<br>";
+
+    var_dump($lugares[2]->getNumero());
+    echo "<br>";
+    var_dump($lugares[2]->getPatente());
+    echo "<br>";
+    
 
 ?>

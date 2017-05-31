@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.2
--- http://www.phpmyadmin.net
+-- version 4.7.0
+-- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: May 29, 2017 at 10:42 
--- Server version: 10.1.13-MariaDB
--- PHP Version: 5.6.23
+-- Servidor: localhost
+-- Tiempo de generación: 31-05-2017 a las 07:36:36
+-- Versión del servidor: 10.1.22-MariaDB
+-- Versión de PHP: 7.0.18
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -17,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `estacionamiento`
+-- Base de datos: `estacionamiento`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `autos`
+-- Estructura de tabla para la tabla `autos`
 --
 
 CREATE TABLE `autos` (
@@ -32,10 +34,20 @@ CREATE TABLE `autos` (
   `marca` varchar(30) COLLATE utf8_spanish2_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
+--
+-- Volcado de datos para la tabla `autos`
+--
+
+INSERT INTO `autos` (`patente`, `color`, `marca`) VALUES
+('DUD454', 'BLANCO', 'PEUGEOT'),
+('BUD554', 'ROJO', 'RENAULT'),
+('BUD555', 'ROJO', 'RENAULT'),
+('BUD556', 'ROJO', 'RENAULT');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `empleados`
+-- Estructura de tabla para la tabla `empleados`
 --
 
 CREATE TABLE `empleados` (
@@ -46,7 +58,7 @@ CREATE TABLE `empleados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
--- Dumping data for table `empleados`
+-- Volcado de datos para la tabla `empleados`
 --
 
 INSERT INTO `empleados` (`id`, `usuario`, `pass`, `activo`) VALUES
@@ -56,7 +68,7 @@ INSERT INTO `empleados` (`id`, `usuario`, `pass`, `activo`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `loginempleados`
+-- Estructura de tabla para la tabla `loginempleados`
 --
 
 CREATE TABLE `loginempleados` (
@@ -68,7 +80,7 @@ CREATE TABLE `loginempleados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
--- Dumping data for table `loginempleados`
+-- Volcado de datos para la tabla `loginempleados`
 --
 
 INSERT INTO `loginempleados` (`idempleado`, `dia`, `sesion`, `entrada`, `salida`) VALUES
@@ -77,35 +89,60 @@ INSERT INTO `loginempleados` (`idempleado`, `dia`, `sesion`, `entrada`, `salida`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `lugares`
+-- Estructura de tabla para la tabla `lugares`
 --
 
 CREATE TABLE `lugares` (
   `numero` int(11) NOT NULL,
   `piso` int(11) NOT NULL,
-  `patente` varchar(30) COLLATE utf8_spanish2_ci NOT NULL,
   `reservado` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `lugares`
+--
+
+INSERT INTO `lugares` (`numero`, `piso`, `reservado`) VALUES
+(1, 1, 1),
+(2, 1, 0),
+(3, 1, 0),
+(4, 1, 0),
+(5, 1, 0),
+(6, 1, 0),
+(7, 1, 0),
+(8, 1, 0),
+(9, 1, 0),
+(10, 1, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `operaciones`
+-- Estructura de tabla para la tabla `operaciones`
 --
 
 CREATE TABLE `operaciones` (
   `idempleado` int(11) NOT NULL,
   `lugar` int(11) NOT NULL,
   `patente` varchar(30) COLLATE utf8_spanish2_ci NOT NULL,
-  `entrada` date NOT NULL,
-  `salida` date NOT NULL,
+  `dia` date NOT NULL,
+  `entrada` time NOT NULL,
+  `salida` time NOT NULL,
   `precio` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `operaciones`
+--
+
+INSERT INTO `operaciones` (`idempleado`, `lugar`, `patente`, `dia`, `entrada`, `salida`, `precio`) VALUES
+(2, 1, 'BUD554', '2017-05-31', '05:03:38', '06:01:02', 0),
+(2, 2, 'BUD555', '2017-05-31', '05:03:38', '00:00:00', 0),
+(2, 3, 'BUD556', '2017-05-31', '05:03:38', '00:00:00', 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `piso`
+-- Estructura de tabla para la tabla `piso`
 --
 
 CREATE TABLE `piso` (
@@ -114,33 +151,25 @@ CREATE TABLE `piso` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
 --
--- Dumping data for table `piso`
---
-
-INSERT INTO `piso` (`numero`, `cantidad`) VALUES
-(1, 10),
-(2, 10),
-(3, 10);
-
---
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `empleados`
+-- Indices de la tabla `empleados`
 --
 ALTER TABLE `empleados`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `empleados`
+-- AUTO_INCREMENT de la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

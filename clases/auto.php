@@ -33,7 +33,7 @@
         }
         public  function agregar(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $inAuto = auto::buscar($auto->patente);
+            $inAuto = auto::buscar($this->patente);
             // VER QUE TRAE;
             if($inAuto == FALSE){
                 $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO autos (patente, color, marca) VALUES (:patente, :color, :marca)");
