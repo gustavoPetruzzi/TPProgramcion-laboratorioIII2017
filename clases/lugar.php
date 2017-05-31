@@ -33,8 +33,10 @@
         public function getReservado(){
             return $this->reservado;
         }
-
-
+        /*
+        SELECT lugares.numero as numero, lugares.piso as piso , operaciones.patente as patente, lugares.reservado as reservado  
+        FROM `lugares`, operaciones WHERE lugares.numero = operaciones.lugar AND operaciones.salida = null
+        */
         public static function traerLugares($piso=null){
             $lugares =array();
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
@@ -51,24 +53,6 @@
             return $lugares;
         }
 
-        public static function agregar($numero, $piso, $patente){
-            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $inLugar = lugar::buscarAuto($patente);
-            $retorno = false;
-            if(!$inLugar){
-                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE lugares set patente = :patente WHERE numero = :numero");
-                $consulta->bindValue(":numero", $numero, PDO::PARAM_INT);
-                $consulta->bindValue(":patente",$patente, PDO::PARAM_STR);
-                $retorno = $consulta->execute();
-            }
-            return $retorno;
-        }
-        public static function sacar($patente){
-            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE lugares set patente = NULL WHERE patente = :vieja");
-            $consulta->bindvalue(":vieja", $patente, PDO::PARAM_STR);
-            return $consulta->execute();
-        }
 
         public static function reservar($numero) {
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
@@ -78,16 +62,7 @@
 
         }
         
-        public static function buscarAuto($patente){
-             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-             $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM lugares WHERE patente = :patente");
-             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
-             $consulta->execute();
-             $consulta->setFetchMode(PDO::FETCH_CLASS, 'lugar');
-             $lugar = $consulta->fetch();
-             return $lugar;
-        }
-        
+
 
     }
     

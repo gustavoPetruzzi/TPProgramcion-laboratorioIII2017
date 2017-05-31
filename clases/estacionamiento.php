@@ -25,6 +25,11 @@
                 $inicio+= $cantidad;
             }
         }
+        public function traerLugares(){
+            $lugares = lugar::traerLugares();
+            
+
+        }
         
     }
 
