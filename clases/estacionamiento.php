@@ -21,19 +21,21 @@
         }
         public function traerLugares(){
             $lugares = lugar::traerLugares();
+
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $patentes = estacionamiento::traerPatentes();
-            foreach ($patentes as $key ) {
-                $lugares[$key['lugar']-1]->setPatente($key['patente']);
-            }
-            return $lugares;
+            estacionamiento::asignarPatentes($lugares, $patentes);
 
+            
+            return $lugares;
         }
-        public function estacionar($auto, $lugar= null){
-            $auto->agregar();
+        // MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
+        public function estacionar($auto, $lugar){
+            
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $dia = date("Y-m-d");
             $hora = date("H:i:s");
+
             $consulta = $objetoAccesoDatos->RetornarConsulta("INSERT INTO operaciones(idempleado, lugar, patente, dia, entrada)
                                                               VALUES(:idempleado,:lugar,:patente, :dia, :entrada)");
             $consulta->bindValue(":idempleado", 2, PDO::PARAM_INT);
@@ -49,6 +51,16 @@
             $consulta =$objetoAccesoDatos->RetornarConsulta("SELECT lugar, patente FROM operaciones WHERE salida = '00:00:00'");
             $consulta->execute();
             return $consulta->fetchAll();
+        }
+        private static function asignarPatentes($lugares, $patentes){
+            $function = function ($lugar, $clave,$patente ){
+                if($lugar->getNumero() == $patente['lugar']){
+                    $lugar->setPatente($patente['patente']);
+                }
+            };
+            foreach ($patentes as $key ) {
+                array_walk($lugares, $function,$key);
+            }
         }
     }
 
