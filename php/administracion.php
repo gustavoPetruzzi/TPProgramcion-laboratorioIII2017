@@ -12,7 +12,6 @@
                 if($empleadoBase->usuario == $usuario && $empleadoBase->getPass() == $pass){
                     session_start();
                     $_SESSION['usuario'] = $empleadoBase;
-                    $_SESSION['sesion'] = rand(1, 999);
                     $retorno['exito'] = empleado::registrarLogin($empleadoBase->id, $_SESSION['sesion']);
                     
                     break;

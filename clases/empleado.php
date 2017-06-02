@@ -83,24 +83,23 @@
             }
         }
 
-        public static function registrarLogin($id, $sesion, $entrada = true){
+        public static function registrarLogin($id, $entrada = true){
             $objetoAccesoDatos =accesoDatos::DameUnObjetoAcceso();
             
             $fecha = date('H:i:s');
             if($entrada){
                 $dia = date('Y-m-d');
-                $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO loginempleados (idempleado, dia, sesion, entrada) 
-                                                              VALUES (:id, :dia, :sesion, :entrada) ");
+                $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO loginempleados (idempleado, dia, entrada) 
+                                                              VALUES (:id, :dia, :entrada) ");
                 $consulta->bindValue(":entrada", $fecha, PDO::PARAM_STR);
                 $consulta->bindValue(":dia", $dia, PDO::PARAM_STR);
                 
             }
             else {
-                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida=:salida WHERE sesion = :sesion AND idempleado=:id");
+                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida=:salida WHERE salida = NULL AND idempleado=:id");
                 $consulta->bindValue(":salida",$fecha, PDO::PARAM_STR);
             }
             $consulta->bindValue(":id", $id, PDO::PARAM_INT);
-            $consulta->bindValue(":sesion", $sesion, PDO::PARAM_INT);
             return $consulta->execute();
         }
     }
