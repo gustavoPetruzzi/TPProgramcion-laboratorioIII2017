@@ -18,7 +18,7 @@ $app->post('/login', function (Request $request, Response $response) {
         foreach ($empleados as $empleadoBase ) {
             if($empleadoBase->usuario == $empleadoLog->usuario && $empleadoBase->getPass() == $empleadoLog->getPass()){
                 session_start();
-                $_SESSION['usuario'] = $empleadoBase;
+                $_SESSION['empleado'] = $empleadoBase;
                 $retorno['exito'] = empleado::registrarLogin($empleadoBase->id);
                 $retorno['usuario'] = $empleadoBase->usuario;
                 
@@ -36,7 +36,7 @@ $app->post('/login', function (Request $request, Response $response) {
 $app->post('/desloguear', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
-    $id = $_SESSION['usuario']->id;
+    $id = $_SESSION['empleado']->id;
     $retorno['exito'] = empleado::registrarLogin($id, false);
     
     $_SESSION['usuario'] = null;
@@ -48,7 +48,7 @@ $app->post('/desloguear', function (Request $request, Response $response) {
 $app->get('/empleados', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
-    if(isset($_SESSION['usuario'])) {
+    if(isset($_SESSION['empleado']) ) {
         $retorno['exito'] = true;
         $retorno['empleados'] = empleado::TraerEmpleados();
     }

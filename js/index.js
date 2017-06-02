@@ -7,13 +7,22 @@ $(document).ready(function(){
 function traerEmpleados(){
     $.ajax({
         url:'empleados',
-        type: "GET"
+        type: "GET",
+        dataType: 'json'
     }).then(empleados, error)
 }
 
 function empleados(data){
     if(data.exito){
-        $("#info").html("<h2>" + data.empleados[0] + "</h2>");
+        var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Borrar / Modificar </td> </tr> </thead>";
+        tabla += "<tbody>";
+        for (var element in data.empleados) {
+            var empleado = data.empleados[element];
+            tabla += "<tr> <td>" + empleado.id + "</td> <td>" + empleado.usuario + "</td> <td>" + empleado.activo + "</td>";
+        }
+        tabla+= "</tbody> </table>";
+        $("#info").html(tabla);
+
     }
     else{
         $("#info").html("<h2> Usted no tiene los permisos para lo requerido </h2>");
@@ -29,7 +38,13 @@ function empleados(data){
 
 
 
-// TODO poner desloguear en una funcion como loguear()
+
+
+
+
+//                                         Funciones de Logueo.
+// TODO Checkear que hacer cuando se refresca la pagina
+// TODO Ver que hacer cuando no se desloguea normalmente en  y queda un registro colgado(PHP)
 function logueado(data){
     
     if(data.exito){
