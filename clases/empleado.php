@@ -8,24 +8,29 @@
         private $_pass;
         public $activo;
 
-        function __construct( $usuario = NULL, $pass = NULL)
+        function __construct( $usuario = NULL, $pass = NULL, $activo = NULL)
         {
             if($usuario != NULL && $pass != NULL){
                 $this->usuario = $usuario;
                 $this->_pass = $pass;
+                $this->activo = $activo;
             }
         }
 
+        public function actualizar(){
+            $this->activo = !$this->activo;
+        }
         public function getPass(){
             return $this->_pass;
         }
 
         public  function modificarEmpleado(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =:usuario, pass=:pass, activo = :activo");
+            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =:usuario, pass=:pass, activo = :activo WHERE id =:id");
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->pass, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_STR);
             return $consulta->execute();
         }
 
@@ -41,7 +46,7 @@
         public static function TraerEmpleados(){
             $listaEmpleados = array();
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id as id, usuario as usuario, pass as _pass FROM empleados");
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id as id, usuario as usuario, pass as _pass, activo as activo FROM empleados");
             $consulta->execute();
             $listaEmpleados= $consulta->fetchAll(PDO::FETCH_CLASS, "empleado");
             return $listaEmpleados;
@@ -71,10 +76,10 @@
         }
         */
 
-        public static function borrarEmpleado($id){
+        public static function borrar(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->retornarConsulta("DELETE FROM empleados WHERE id= :id");
-            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
             if($consulta->execute() > 0){
                 return true;
             }
@@ -96,11 +101,32 @@
                 
             }
             else {
-                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida=:salida WHERE salida = NULL AND idempleado=:id");
+                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida=:salida WHERE salida = '00:00:00' AND idempleado=:id");
                 $consulta->bindValue(":salida",$fecha, PDO::PARAM_STR);
             }
             $consulta->bindValue(":id", $id, PDO::PARAM_INT);
             return $consulta->execute();
+        }
+        public static function logueos($id=null){
+            if(isset($id)){
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
+                                                                  WHERE loginempleados.idempleado = empleados.id AND id = :id");
+                $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            }
+            else{
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
+                                                                  WHERE loginempleados.idempleado = empleados.id");
+            }
+            $consulta->execute();
+            return $consulta->fetchAll();
+        }
+
+        public  function operaciones($fecha){
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE dia = :fecha AND idempleado = :id");
+            $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $consulta->execute();
+            return $consulta->fetchAll();
         }
     }
     

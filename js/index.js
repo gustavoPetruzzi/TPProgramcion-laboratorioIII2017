@@ -1,7 +1,12 @@
 $(document).ready(function(){
     loguear();
 });
-
+window.onbeforeunload = function(e){
+        $.ajax({
+        url:"desloguear",
+        type:"POST",
+    }).then(refresh, error)
+}
 
 
 function traerEmpleados(){
@@ -18,7 +23,15 @@ function empleados(data){
         tabla += "<tbody>";
         for (var element in data.empleados) {
             var empleado = data.empleados[element];
+            if(empleado.activo){
+                empleado.activo = "Activo";
+            }
+            else{
+                empleado.activo = "Suspendido";
+            }
             tabla += "<tr> <td>" + empleado.id + "</td> <td>" + empleado.usuario + "</td> <td>" + empleado.activo + "</td>";
+            tabla += "<td> <button type='button' class='btn btn-warning' onclick='modificarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-random'></span> Modificar</button>";
+            tabla += "<button type='button' class='btn btn-danger' onclick='borrarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Danger</button>  </td>";
         }
         tabla+= "</tbody> </table>";
         $("#info").html(tabla);
@@ -27,6 +40,27 @@ function empleados(data){
     else{
         $("#info").html("<h2> Usted no tiene los permisos para lo requerido </h2>");
     }
+}
+function borrarEmpleado(id){
+    $.ajax({
+        url: 'empleados',
+        type:"DELETE",
+        dataType: 'json'
+    }).then(borrado, error)
+
+}
+
+function borrado(data){
+    if(data.exito){
+        var estado = "<h3 class='text-success text-center'> Empleado eliminando </h3>";
+        estado+= "<p> <b> ID: </b>" + data.empleado.id + "</p>";
+        estado+= "<p> <b> Usuario: </b>" + data.empleado.usuario + "</p>";
+
+        $("#estado").html(estado);
+        traerEmpleados();
+    }
+
+
 }
 
 
@@ -45,13 +79,17 @@ function empleados(data){
 //                                         Funciones de Logueo.
 // TODO Checkear que hacer cuando se refresca la pagina
 // TODO Ver que hacer cuando no se desloguea normalmente en  y queda un registro colgado(PHP)
+function refresh(){
+    alert("guardando refresh");
+}
 function logueado(data){
     
     if(data.exito){
         var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.usuario + ' </h4>';
-        htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>'
+        htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>';
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
+        $("#empleados").removeClass("hidden");
         desloguear();
     }
 
