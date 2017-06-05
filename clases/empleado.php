@@ -28,7 +28,7 @@
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =:usuario, pass=:pass, activo = :activo WHERE id =:id");
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
-            $consulta->bindValue(":pass", $this->pass, PDO::PARAM_STR);
+            $consulta->bindValue(":pass", $this->_pass, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
             $consulta->bindValue(":id", $this->id, PDO::PARAM_STR);
             return $consulta->execute();
@@ -36,10 +36,16 @@
 
         public  function guardarEmpleado(){
             $objetoGuardarDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (usuario, pass)"
-                                                             . " VALUES(:usuario, :pass)");
+            $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (usuario, pass, activo)"
+                                                             . " VALUES(:usuario, :pass, :activo)");
+            $activo = 0;                                                             
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->getPass(), PDO::PARAM_STR);
+            if($this->activo){
+                $activo = 1;
+            }
+            
+            $consulta->bindValue(":activo", $activo, PDO::PARAM_INT);
             return $consulta->execute();
         }
 
@@ -76,7 +82,7 @@
         }
         */
 
-        public static function borrar(){
+        public  function borrar(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->retornarConsulta("DELETE FROM empleados WHERE id= :id");
             $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);

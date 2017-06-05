@@ -1,6 +1,24 @@
 $(document).ready(function(){
     loguear();
+    registrarEmpleado();
 });
+function registrado(data){
+    if(data.exito){
+        alert("empleado Registrado");
+    }
+}
+function registrarEmpleado(){
+    $("#register").click(function(){
+        var empleado = $("#usuarioNuevo").val();
+        var clave = $("#clave").val();
+        $.ajax({
+            url:"empleados",
+            type:"POST",
+            dataType:'json',
+            data: {usuario: empleado, pass: clave}
+        }).then(registrado,error);
+    })
+}
 window.onbeforeunload = function(e){
         $.ajax({
         url:"desloguear",
@@ -31,7 +49,8 @@ function empleados(data){
             }
             tabla += "<tr> <td>" + empleado.id + "</td> <td>" + empleado.usuario + "</td> <td>" + empleado.activo + "</td>";
             tabla += "<td> <button type='button' class='btn btn-warning' onclick='modificarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-random'></span> Modificar</button>";
-            tabla += "<button type='button' class='btn btn-danger' onclick='borrarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Danger</button>  </td>";
+            tabla += "<button type='button' class='btn btn-danger' onclick='borrarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Borrar</button>  ";
+            tabla += "<button type='button' class='btn btn-success' onclick='actualizarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Actualizar</button>  </td>";
         }
         tabla+= "</tbody> </table>";
         $("#info").html(tabla);
@@ -41,27 +60,46 @@ function empleados(data){
         $("#info").html("<h2> Usted no tiene los permisos para lo requerido </h2>");
     }
 }
-function borrarEmpleado(id){
+function borrarEmpleado(idEmpleado){
     $.ajax({
         url: 'empleados',
         type:"DELETE",
-        dataType: 'json'
+        dataType: 'json',
+        data : {id: idEmpleado }
     }).then(borrado, error)
 
 }
 
 function borrado(data){
     if(data.exito){
-        var estado = "<h3 class='text-success text-center'> Empleado eliminando </h3>";
+        var estado = "<h3 class='text-success text-center'> Empleado eliminado </h3>";
         estado+= "<p> <b> ID: </b>" + data.empleado.id + "</p>";
         estado+= "<p> <b> Usuario: </b>" + data.empleado.usuario + "</p>";
 
         $("#estado").html(estado);
         traerEmpleados();
     }
-
-
 }
+function actualizarEmpleado(idEmpleado){
+    $.ajax({
+        url:'empleados',
+        type:"PATCH",
+        dataType: 'json',
+        data: { id: idEmpleado}
+    }).then(actualizado,error);
+}
+function actualizado(data){
+    if(data.exito){
+        var estado = "<h3 class='text-success text-center'> Empleado actualizado </h3>";
+        estado+= "<p> <b> ID: </b>" + data.empleado.id + "</p>";
+        estado+= "<p> <b> Usuario: </b>" + data.empleado.usuario + "</p>";
+
+        $("#estado").html(estado);
+        traerEmpleados();
+    }
+}
+
+
 
 
 
@@ -85,7 +123,7 @@ function refresh(){
 function logueado(data){
     
     if(data.exito){
-        var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.usuario + ' </h4>';
+        var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.empleado + ' </h4>';
         htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>';
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
@@ -106,6 +144,8 @@ function deslogueado(data){
         htmlDeslogueado +='<button class="btn btn-default" type="button" id="login"> Login </button> </form>'
         $("#logout").html(htmlDeslogueado);
         $("#logout").attr('id', 'log');
+        $("#info").html("");
+        $("#estado").html("");
         loguear();
     }
     else{

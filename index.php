@@ -6,7 +6,7 @@ require './vendor/autoload.php';
 require './clases/empleado.php';
 $app = new \Slim\App;
 $app->post('/login', function (Request $request, Response $response) {
-    if(!isset($_SESSION['usuario'])){
+    if(!isset($_SESSION['empleado'])){
         $empleados = empleado::TraerEmpleados();
         //TODO--->VER VALIDACIONES
         $data = $request->getParsedBody();
@@ -20,7 +20,7 @@ $app->post('/login', function (Request $request, Response $response) {
                 session_start();
                 $_SESSION['empleado'] = $empleadoBase;
                 $retorno['exito'] = empleado::registrarLogin($empleadoBase->id);
-                $retorno['usuario'] = $empleadoBase->usuario;
+                $retorno['empleado'] = $empleadoBase->usuario;
                 
                 break;
             }
@@ -29,7 +29,7 @@ $app->post('/login', function (Request $request, Response $response) {
     else{
         session_start();
         $retorno['exito'] = true;
-        $retorno['usuario'] = $_SESSION['usuario'];
+        $retorno['empleado'] = $_SESSION['empleado'];
     }
     return $response->withJson($retorno);
 });
@@ -40,7 +40,7 @@ $app->post('/desloguear', function (Request $request, Response $response) {
         $id = $_SESSION['empleado']->id;
         $retorno['exito'] = empleado::registrarLogin($id, false);
         
-        $_SESSION['usuario'] = null;
+        $_SESSION['empleado'] = null;
         session_destroy();        
     }
     
@@ -63,14 +63,17 @@ $app->get('/empleados', function (Request $request, Response $response) {
 });
 
 $app->post('/empleados', function (Request $request, Response $response) {
+    session_start();
     $retorno['exito'] = false;
     if(isset($_SESSION['empleado']) && $_SESSION['empleado']->usuario == 'admin'){
+        
         $data = $request->getParsedBody();
         $usuario = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
         $pass = filter_var($data['pass'], FILTER_SANITIZE_STRING);
-        $activo = filter_var($data['activo'], FILTER_SANITIZE_INT);
-        $nuevoEmpleado = new empleado($usuario, $pass, $activo);
+        
+        $nuevoEmpleado = new empleado($usuario, $pass, true);
         $retorno['exito'] = $nuevoEmpleado->guardarEmpleado();
+        $retorno['exito'] = "LA PUTA MADRE";
         
     }
     return $response->withJson($retorno);
@@ -106,7 +109,21 @@ $app->put('/empleados', function (Request $request, Response $response) {
     
     return $response->withJson($retorno);
 });
+$app->patch('/empleados', function (Request $request, Response $response) {
+    session_start();
+    $retorno['exito'] = false;
+    if(isset($_SESSION['empleado']) && $_SESSION['empleado']->usuario == 'admin') {
+        
+        $data = $request->getParsedBody();
+        $id = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
+        $empleado = empleado::buscarEmpleado($id);
+        $empleado->actualizar();
 
+        $retorno['exito'] = $empleado->modificarEmpleado();
+    }
+    
+    return $response->withJson($retorno);
+});
 
 $app->get('/empleados/login', function (Request $request, Response $response) {
     session_start();
