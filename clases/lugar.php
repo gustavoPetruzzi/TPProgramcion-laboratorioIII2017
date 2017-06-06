@@ -1,13 +1,13 @@
-    <?php
+<?php
 
     include_once("accesoDatos.php");
     include_once("auto.php");
     class lugar 
     {
-        private $numero;
-        private $piso;
-        private $patente;
-        private $reservado; 
+        public $numero;
+        public $piso;
+        public $patente;
+        public $reservado; 
         
 
         function __construct($numero = NULL,$patente = NULL, $piso = NULL, $reservado=false)

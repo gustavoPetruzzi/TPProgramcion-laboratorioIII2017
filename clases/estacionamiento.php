@@ -1,9 +1,9 @@
 <?php
-    //include_once("auto.php");
+    
     include_once("empleado.php");
     include_once("piso.php");
     include_once("accesoDatos.php");
-
+    include_once("lugar.php");
 
     class estacionamiento 
     {
@@ -11,23 +11,66 @@
         public $precioHora;
         public $precioEstadia;
         public $precioMedia;
-        function __construct($hora, $media, $estadia)
+        function __construct($hora=null, $media=null, $estadia=null)
         {
-
-            $this->precioHora = $hora;
-            $this->precioMedia = $media;
-            $this->precioEstadia = $estadia;
+            if($hora !=null && $media!=null && $estadia!=null){
+                $this->precioHora = $hora;
+                $this->precioMedia = $media;
+                $this->precioEstadia = $estadia;
+            }
 
         }
         public function traerLugares(){
             $lugares = lugar::traerLugares();
-
-            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            //var_dump($lugares);
             $patentes = estacionamiento::traerPatentes();
-            estacionamiento::asignarPatentes($lugares, $patentes);
+            //estacionamiento::asignarPatentes($lugares, $patentes);
 
             
             return $lugares;
+        }
+        public function loguear($usuario, $pass){
+            if(!isset($_SESSION['empleado'])){
+                $empleados = empleado::TraerEmpleados();
+                //TODO--->VER VALIDACIONES
+
+                $empleadoLog = new empleado($usuario, $pass);
+                $retorno['exito'] = false;
+                foreach ($empleados as $empleadoBase ) {
+                    if($empleadoBase->usuario == $empleadoLog->usuario && $empleadoBase->getPass() == $empleadoLog->getPass()){
+                        session_start();
+                        $_SESSION['empleado'] = $empleadoBase;
+                        $retorno['exito'] = empleado::registrarLogin($empleadoBase->id);
+                        $retorno['empleado'] = $empleadoBase->usuario;
+                        
+                        break;
+                    }
+                }
+            }
+            else{
+                session_start();
+                $retorno['exito'] = true;
+                $retorno['empleado'] = $_SESSION['empleado']->usuario;
+            }
+            if($retorno['exito']){
+                $retorno['precios'] = $this;
+                $auxiliar = $this->traerLugares();
+                var_dump($auxiliar);
+                $retorno['lugares'] = [];
+                
+                array_push($retorno['lugares'], $auxiliar);
+                
+            }
+            return $retorno;
+        }
+        
+        public static function traerEstacionamiento(){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta =$objetoAccesoDatos->RetornarConsulta("SELECT hora as precioHora, media as precioMedia, estadia as precioEstadia FROM precios");
+            $consulta->setFetchMode(PDO::FETCH_CLASS, "estacionamiento");
+            $consulta->execute();
+            return $consulta->fetch();
+
         }
         // MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
         public function estacionar($auto, $lugar){
@@ -66,4 +109,3 @@
 
 
 ?>
-

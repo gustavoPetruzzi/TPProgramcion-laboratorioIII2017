@@ -3,34 +3,20 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 require './vendor/autoload.php';
-require './clases/empleado.php';
+require_once './clases/empleado.php';
+require_once './clases/estacionamiento.php';
 $app = new \Slim\App;
+
+
+
 $app->post('/login', function (Request $request, Response $response) {
-    if(!isset($_SESSION['empleado'])){
-        $empleados = empleado::TraerEmpleados();
-        //TODO--->VER VALIDACIONES
-        $data = $request->getParsedBody();
-        $usuarioLog = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
-        
-        $passLog = filter_var($data['pass'], FILTER_SANITIZE_STRING);
-        $empleadoLog = new empleado($usuarioLog, $passLog);
-        $retorno['exito'] = false;
-        foreach ($empleados as $empleadoBase ) {
-            if($empleadoBase->usuario == $empleadoLog->usuario && $empleadoBase->getPass() == $empleadoLog->getPass()){
-                session_start();
-                $_SESSION['empleado'] = $empleadoBase;
-                $retorno['exito'] = empleado::registrarLogin($empleadoBase->id);
-                $retorno['empleado'] = $empleadoBase->usuario;
-                
-                break;
-            }
-        }
-    }
-    else{
-        session_start();
-        $retorno['exito'] = true;
-        $retorno['empleado'] = $_SESSION['empleado'];
-    }
+    $estacionamiento = estacionamiento::traerEstacionamiento();
+    $data = $request->getParsedBody();
+    $usuarioLog = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
+    $passLog = filter_var($data['pass'], FILTER_SANITIZE_STRING);
+
+    $retorno = $estacionamiento->loguear($usuarioLog, $passLog);
+    //var_dump($retorno);
     return $response->withJson($retorno);
 });
 $app->post('/desloguear', function (Request $request, Response $response) {
@@ -54,7 +40,7 @@ $app->post('/desloguear', function (Request $request, Response $response) {
 $app->get('/empleados', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
-    if(isset($_SESSION['empleado']) ) {
+    if(isset($_SESSION['empleado']) && $_SESSION['empleado']->usuario == 'admin') {
         $retorno['exito'] = true;
         $retorno['empleados'] = empleado::TraerEmpleados();
     }

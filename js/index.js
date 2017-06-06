@@ -1,7 +1,19 @@
 $(document).ready(function(){
     loguear();
     registrarEmpleado();
+    
 });
+
+
+
+
+window.onbeforeunload = function(e){
+        $.ajax({
+        url:"desloguear",
+        type:"POST",
+    }).then(refresh, error)
+}
+                            /* EMPLEADOS */
 function registrado(data){
     if(data.exito){
         alert("empleado Registrado");
