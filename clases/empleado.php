@@ -20,6 +20,9 @@
         public function actualizar(){
             $this->activo = !$this->activo;
         }
+        public function setPass($nuevo){
+            $this->_pass  = $nuevo;
+        }
         public function getPass(){
             return $this->_pass;
         }
@@ -30,7 +33,7 @@
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->_pass, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
-            $consulta->bindValue(":id", $this->id, PDO::PARAM_STR);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
             return $consulta->execute();
         }
 

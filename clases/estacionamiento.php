@@ -24,7 +24,7 @@
             $lugares = lugar::traerLugares();
             //var_dump($lugares);
             $patentes = estacionamiento::traerPatentes();
-            //estacionamiento::asignarPatentes($lugares, $patentes);
+            estacionamiento::asignarPatentes($lugares, $patentes);
 
             
             return $lugares;
@@ -54,11 +54,9 @@
             }
             if($retorno['exito']){
                 $retorno['precios'] = $this;
-                $auxiliar = $this->traerLugares();
-                var_dump($auxiliar);
-                $retorno['lugares'] = [];
                 
-                array_push($retorno['lugares'], $auxiliar);
+                $retorno['lugares'] = $this->traerLugares();
+                
                 
             }
             return $retorno;

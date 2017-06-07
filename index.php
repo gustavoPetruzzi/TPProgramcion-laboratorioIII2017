@@ -59,7 +59,6 @@ $app->post('/empleados', function (Request $request, Response $response) {
         
         $nuevoEmpleado = new empleado($usuario, $pass, true);
         $retorno['exito'] = $nuevoEmpleado->guardarEmpleado();
-        $retorno['exito'] = "LA PUTA MADRE";
         
     }
     return $response->withJson($retorno);
@@ -88,8 +87,10 @@ $app->put('/empleados', function (Request $request, Response $response) {
         $id = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
         $usuario = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
         $pass = filter_var($data['pass'], FILTER_SANITIZE_STRING);
-        $activo = filter_var($data['activo'], FILTER_SANITIZE_INT);
-        $empleadoModificado = new empleado($usuario, $pass, $activo);
+        
+        $empleadoModificado = empleado::buscarEmpleado($id);
+        $empleadoModificado->usuario = $usuario;
+        $empleadoModificado->setPass($pass);
         $retorno['exito'] = $empleadoModificado->modificarEmpleado();
     }
     
