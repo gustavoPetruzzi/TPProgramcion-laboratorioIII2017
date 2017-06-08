@@ -20,12 +20,51 @@ window.onbeforeunload = function(e){
     }).then(refresh, error)
 }
 */
+                                            /* ESTACIONAR */
+function tablaLugares(lugares){
+        var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Numero </td> <td> Piso </td> <td> Patente </td> <td> Reservado </td> <td> algo</td> </tr> </thead>";
+        tabla += "<tbody>";
+        for (var element in lugares) {
+            var lugar = lugares[element];
+            var button = "";
+            if(lugar.patente == null){
+                lugar.patente = "";
+                tabla += "<tr class='success'>";
+                button = buttonEstacionar(lugar.numero,true);
+            }
+            else{
+                tabla += "<tr class='danger'>";
+                button = buttonEstacionar(lugar.numero);
+            }
+            if(lugar.reservado){
+                lugar.reservado = "Reservado";
+            }
+            else{
+                lugar.reservado = "No";
+            }
+            tabla+= "<td>" + lugar.numero + "</td> <td>" + lugar.piso + "</td> <td>" + lugar.patente + "</td> <td>" + lugar.reservado +"</td> <td>" + button +"</td> </tr>";
+        }
+        tabla += "</tbody> </table>";
+        return tabla;
+}
+
+function buttonEstacionar(numero, estacionar=false){
+    var button = "<button class='btn";
+    if(estacionar){
+        button += " btn-success' onclick='modalEstacionar("+ numero +")'> estacionar </button>";
+    }
+    else{
+        button += " btn-danger' onclick='sacar('"+ numero + "')> sacar </button> ";
+    }
+    return button;
+}
                             /* EMPLEADOS */
 function registrado(data){
     if(data.exito){
         alert("empleado Registrado");
     }
 }
+
 function registrarEmpleado(){
     $('#agregarEmpleado').modal('show');
     $("#modificar").attr('id', 'register');
@@ -183,32 +222,15 @@ function logueado(data){
         estado+= "<p> <b> Media Estadia: </b>" + data.precios.precioMedia + "</p>";
         estado+= "<p> <b> Estadia: </b>" + data.precios.precioEstadia + "</p>";
 
-        var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Numero </td> <td> Piso </td> <td> Patente </td> <td> Reservado </td> </tr> </thead>";
-        tabla += "<tbody>";
-        for (var element in data.lugares) {
-            var lugar = data.lugares[element];
-            if(lugar.patente == null){
-                lugar.patente = "";
-                tabla += "<tr class='success'>";
-            }
-            else{
-                tabla += "<tr class='danger'>";
-            }
-            if(lugar.reservado){
-                lugar.reservado = "Reservado";
-            }
-            else{
-                lugar.reservado = "No";
-            }
-            tabla+= "<td>" + lugar.numero + "</td> <td>" + lugar.piso + "</td> <td>" + lugar.patente + "</td> <td>" + lugar.reservado + "</td> <td> </tr>";
-        }
-        tabla += "</tbody> </table>";
+        tabla =tablaLugares(data.lugares)
 
         $("#info").html(tabla);
         $("#estado").html(estado);
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
-        $("#empleados").removeClass("hidden");
+        if(data.empleado == 'hidden'){
+            $("#empleados").removeClass("hidden");
+        }
         desloguear();
     }
 
@@ -225,6 +247,7 @@ function deslogueado(data){
         htmlDeslogueado +='<button class="btn btn-default" type="button" id="login"> Login </button> </form>'
         $("#logout").html(htmlDeslogueado);
         $("#logout").attr('id', 'log');
+        $("#empleados").addClass('hidden');
         $("#info").html("");
         $("#estado").html("");
         loguear();
@@ -237,7 +260,6 @@ function deslogueado(data){
 function error(data) {
     alert("error");
     console.info(data);
-    console.info(data.data);
 }
 
 
