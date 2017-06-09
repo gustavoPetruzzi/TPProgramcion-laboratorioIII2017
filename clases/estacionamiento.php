@@ -22,7 +22,8 @@
         }
         public function traerLugares(){
             $lugares = lugar::traerLugares();
-            //var_dump($lugares);
+            
+            
             $patentes = estacionamiento::traerPatentes();
             estacionamiento::asignarPatentes($lugares, $patentes);
 
@@ -71,7 +72,7 @@
 
         }
         // MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
-        public function estacionar($auto, $lugar){
+        public function estacionar($auto,$id, $lugar = null){
             
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $dia = date("Y-m-d");
@@ -79,14 +80,31 @@
 
             $consulta = $objetoAccesoDatos->RetornarConsulta("INSERT INTO operaciones(idempleado, lugar, patente, dia, entrada)
                                                               VALUES(:idempleado,:lugar,:patente, :dia, :entrada)");
-            $consulta->bindValue(":idempleado", 2, PDO::PARAM_INT);
+            $consulta->bindValue(":idempleado", $id, PDO::PARAM_INT);
             $consulta->bindValue(":lugar", $lugar, PDO::PARAM_INT);
             $consulta->bindValue(":patente", $auto->patente,PDO::PARAM_STR);
             $consulta->bindValue(":dia", $dia, PDO::PARAM_STR);
             $consulta->bindValue(":entrada", $hora, PDO::PARAM_STR);
-            return $consulta->execute();
+            if($consulta->execute()){
+                return $dia;
+            }
+            else{
+                return false;
+            }
+
 
         }
+        public function sacar($lugar){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET salida = :salida WHERE lugar=:numero AND salida = '00:00:00'");
+            $hora = date("H:i:s");
+            $consulta->bindValue(":salida",$hora, PDO::PARAM_STR);
+            $consulta->bindValue(":numero", $lugar, PDO::PARAM_INT);
+            return $consulta->execute();
+        }
+
+
+                            /* FUNCIONES PRIVADAS */
         private static function traerPatentes(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta =$objetoAccesoDatos->RetornarConsulta("SELECT lugar, patente FROM operaciones WHERE salida = '00:00:00'");

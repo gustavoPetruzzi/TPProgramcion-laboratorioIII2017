@@ -1,5 +1,9 @@
 $(document).ready(function(){
     loguear();
+    var colores = ['rojo', 'blanco', 'negro', 'azul', 'verde'];
+    var marcas = ['renault', 'ford', 'chevrolet', 'peugeot'];
+    cargarSelect("#color", colores);
+    cargarSelect("#marca", marcas);
     $('#agregarEmpleado').on('hidden.bs.modal', function (e) {
         $("[name=modalEmpleado]").prop('onclick',null).off('click');
 
@@ -8,6 +12,7 @@ $(document).ready(function(){
         $("#usuarioNuevo").val("");
         $("#clave").val("");
     })
+    eventEstacionar();
 });
 
 
@@ -20,9 +25,18 @@ window.onbeforeunload = function(e){
     }).then(refresh, error)
 }
 */
+function cargarSelect(id, elementos){
+    $.each(elementos, function(key, value) {   
+        $(id)
+            .append($("<option></option>")
+                        .attr("value",value)
+                        .text(value)); 
+    });
+}
+
                                             /* ESTACIONAR */
 function tablaLugares(lugares){
-        var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Numero </td> <td> Piso </td> <td> Patente </td> <td> Reservado </td> <td> algo</td> </tr> </thead>";
+        var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Numero </td> <td> Piso </td> <td> Patente </td> <td> Reservado </td> <td> Operar</td> </tr> </thead>";
         tabla += "<tbody>";
         for (var element in lugares) {
             var lugar = lugares[element];
@@ -54,10 +68,46 @@ function buttonEstacionar(numero, estacionar=false){
         button += " btn-success' onclick='modalEstacionar("+ numero +")'> estacionar </button>";
     }
     else{
-        button += " btn-danger' onclick='sacar('"+ numero + "')> sacar </button> ";
+        button += " btn-danger' onclick='sacar("+ numero + ")'> sacar </button> ";
     }
     return button;
 }
+
+function modalEstacionar(numero){
+    $("#lugar").val(numero);
+    $('#ingresoAuto').modal('show');
+
+}
+function sacar(numero){
+    $.ajax({
+        url:'estacionamiento',
+        type:'DELETE',
+        dataType: 'json',
+        data: {lugar: numero }
+    }).then(sacado, error)   
+}
+function sacado(data){
+    alert("sacado");
+}
+function eventEstacionar(){
+    var lugarAuto = $("#lugar").val();
+    $("#estacionar").click(function(){
+        var patenteAuto = $("#patenteAuto").val();
+        var colorAuto = $("#color").val();
+        var marcaAuto = $("#marca").val();
+        $.ajax({
+            url:'estacionamiento',
+            type:'POST',
+            dataType: 'json',
+            data: {lugar: lugarAuto, patente: patenteAuto, color: colorAuto, marca: marcaAuto}
+        }).then(estacionado, error);
+    })
+}
+function estacionado(data){
+    alert("estacionado");
+}
+
+
                             /* EMPLEADOS */
 function registrado(data){
     if(data.exito){
@@ -228,7 +278,7 @@ function logueado(data){
         $("#estado").html(estado);
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
-        if(data.empleado == 'hidden'){
+        if(data.empleado == 'admin'){
             $("#empleados").removeClass("hidden");
         }
         desloguear();
@@ -241,10 +291,12 @@ function logueado(data){
 function deslogueado(data){
     
     if(data.exito){
-        var htmlDeslogueado =' <form class="form-signin navbar-form" >';
-        htmlDeslogueado +=  '<input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuario">';
-        htmlDeslogueado +=     '<input type="password" class="form-control" placeholder="password" name="pass" id="pass">';
-        htmlDeslogueado +='<button class="btn btn-default" type="button" id="login"> Login </button> </form>'
+        var htmlDeslogueado =' <form class="navbar-form navbar-right" >';
+        htmlDeslogueado +='<div class="form-group">';
+        htmlDeslogueado +=  '<input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuario"> </div>';
+        htmlDeslogueado +='<div class="form-group">';
+        htmlDeslogueado +=  '<input type="password" class="form-control" placeholder="password" name="pass" id="pass"> </div>';
+        htmlDeslogueado +='<button class="btn btn-default" type="button" id="login"><span class="glyphicon glyphicon-log-in"></span> Login </button> </form>'
         $("#logout").html(htmlDeslogueado);
         $("#logout").attr('id', 'log');
         $("#empleados").addClass('hidden');

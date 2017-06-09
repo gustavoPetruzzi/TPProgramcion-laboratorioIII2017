@@ -7,8 +7,63 @@ require_once './clases/empleado.php';
 require_once './clases/estacionamiento.php';
 $app = new \Slim\App;
 
+$app->get('/estacionamiento', function (Request $request, Response $response) {
+    session_start();
+    $retorno['exito'] = false;
+    if(isset($_SESSION['empleado'])) {
+        $estacionamiento = new estacionamiento();
+        $retorno['lugares'] = $estacionamiento->traerLugares();
+        if(isset($retorno)){
+            $retorno['exito'] = true;
+        }
+    }
+    
+    return $response->withJson($retorno);
+});
+$app->post('/estacionamiento', function (Request $request, Response $response) {
+    session_start();
+    $retorno['exito'] = false;
+    if(isset($_SESSION['empleado'])){
+        $estacionamiento = estacionamiento::traerEstacionamiento();
+        $data = $request->getParsedBody();
+        $patente = filter_var($data['patente'], FILTER_SANITIZE_STRING);
+        $color = filter_var($data['color'], FILTER_SANITIZE_STRING);
+        $marca = filter_var($data['marca'], FILTER_SANITIZE_STRING);
+        $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
+        $auto = new auto($patente, $color, $marca);
+
+        $auto->agregar();
+        $retorno['entrada'] = $estacionamiento->estacionar($auto, $_SESSION['empleado']->id, $lugar);
+        if(isset($retorno['entrada'])){
+            $retorno['auto'] = $auto;
+            $retorno['exito'] = true;
+        }
+    }
+    return $response->withJson($retorno);
+});
 
 
+$app->delete('/estacionamiento', function (Request $request, Response $response) {
+    session_start();
+    $retorno['exito'] = false;
+    if(isset($_SESSION['empleado'])) {
+        $estacionamiento = new estacionamiento();
+        $data = $request->getParsedBody();
+        $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
+        
+        $retorno['exito'] = $estacionamiento->sacar($lugar);
+    }
+    
+    return $response->withJson($retorno);
+});
+
+
+
+
+
+
+
+                                        /* LOGIN */
 $app->post('/login', function (Request $request, Response $response) {
     $estacionamiento = estacionamiento::traerEstacionamiento();
     $data = $request->getParsedBody();
@@ -16,9 +71,10 @@ $app->post('/login', function (Request $request, Response $response) {
     $passLog = filter_var($data['pass'], FILTER_SANITIZE_STRING);
 
     $retorno = $estacionamiento->loguear($usuarioLog, $passLog);
-    //var_dump($retorno);
     return $response->withJson($retorno);
 });
+
+
 $app->post('/desloguear', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
@@ -96,6 +152,8 @@ $app->put('/empleados', function (Request $request, Response $response) {
     
     return $response->withJson($retorno);
 });
+
+// EMPLEADO NO SE ACTUALIZA
 $app->patch('/empleados', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
@@ -107,6 +165,9 @@ $app->patch('/empleados', function (Request $request, Response $response) {
         $empleado->actualizar();
 
         $retorno['exito'] = $empleado->modificarEmpleado();
+        if($retorno['exito']){
+            $retorno['empleado'] = $empleado;
+        }
     }
     
     return $response->withJson($retorno);
