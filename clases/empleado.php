@@ -104,14 +104,11 @@
             if($entrada){
                 $dia = date('Y-m-d');
                 $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO loginempleados (idempleado, dia, entrada) 
-                                                              VALUES (:id, :dia, :entrada) ");
-                $consulta->bindValue(":entrada", $fecha, PDO::PARAM_STR);
-                $consulta->bindValue(":dia", $dia, PDO::PARAM_STR);
+                                                              VALUES (:id,  DATE_FORMAT(NOW(),'%Y:%m:%d'), DATE_FORMAT(NOW(),'%H:%i:%s') ) ");
                 
             }
             else {
-                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida=:salida WHERE salida = '00:00:00' AND idempleado=:id");
-                $consulta->bindValue(":salida",$fecha, PDO::PARAM_STR);
+                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida= DATE_FORMAT(NOW(),'%H:%i:%s') WHERE salida = '00:00:00' AND idempleado=:id");
             }
             $consulta->bindValue(":id", $id, PDO::PARAM_INT);
             return $consulta->execute();

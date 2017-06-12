@@ -11,11 +11,10 @@ $app->get('/estacionamiento', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
     if(isset($_SESSION['empleado'])) {
-        $estacionamiento = new estacionamiento();
+        $estacionamiento = estacionamiento::traerEstacionamiento();
         $retorno['lugares'] = $estacionamiento->traerLugares();
-        if(isset($retorno)){
-            $retorno['exito'] = true;
-        }
+        $retorno['precios'] = $estacionamiento;
+        $retorno['exito'] = true;
     }
     
     return $response->withJson($retorno);
@@ -47,11 +46,10 @@ $app->delete('/estacionamiento', function (Request $request, Response $response)
     session_start();
     $retorno['exito'] = false;
     if(isset($_SESSION['empleado'])) {
-        $estacionamiento = new estacionamiento();
+        $estacionamiento = estacionamiento::traerEstacionamiento();
         $data = $request->getParsedBody();
-        $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
         
-        $retorno['exito'] = $estacionamiento->sacar($lugar);
+        $retorno = $estacionamiento->sacar($data);
     }
     
     return $response->withJson($retorno);

@@ -65,7 +65,7 @@
                 
             </div>
             <div class="modal-footer">
-                <button class="btn btn-default" type="button" data-dismiss="modal" id="estacionar" name="modalEmpleado"> Registrar </button>
+                <button class="btn btn-default" type="button" data-dismiss="modal" id="estacionar" name="modalAuto"> Registrar </button>
                 
             </div>
             </div>
@@ -73,7 +73,29 @@
         </div>
     </div>
     <!-- Fin Modal Ingreso Auto-->
+    <!-- Modal Salida auto -->
+        <div id="modalSalida" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Salida</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="form-control"  name="patente" id="patenteSalida" >
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default btn-block" type="button" data-dismiss="modal" id="salida" name="modalAuto"> Salida </button>
+                
+            </div>
+            </div>
 
+        </div>
+    </div>
+    <!-- Fin Modal Salida Auto-->
+    <!-- Navbar -->
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
@@ -89,7 +111,23 @@
                         
                     </ul>
                 </li>
-                
+                <li class="dropdown">
+                    <a id="autos" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Estacionamiento</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="" class=""  onclick="estacionamiento(); return false;">Lugares</a></li>
+                        <li><a href="" class="" onclick="registrarEmpleado(); return false;">Estacionar</a></li>
+                        <li><a href="" class="" onclick="salidaAuto(); return false;">Salida</a></li>
+                        
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a id="operaciones" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Operar</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="" class=""  onclick="traerEmpleados(); return false;">Buscar auto</a></li>
+                        
+                    </ul>
+                </li>
             </ul>
 
             <form id="log" class="navbar-form navbar-right">
@@ -105,12 +143,16 @@
                 
             </form>>
     </nav>
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-9" id="info" style="background-color:lavender;"></div>
-    
-    <div class="col-sm-3" id="estado" style="background-color:lavender;"></div>
-  </div>
-</div>
-</body>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-9" id="info"></div>
+                
+                <div class="col-sm-3" id="estado" >
+                    <div id="precios"> </div>
+                    <div id="respuesta"> </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

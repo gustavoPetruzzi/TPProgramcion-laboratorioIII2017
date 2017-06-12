@@ -43,7 +43,6 @@
                         $_SESSION['empleado'] = $empleadoBase;
                         $retorno['exito'] = empleado::registrarLogin($empleadoBase->id);
                         $retorno['empleado'] = $empleadoBase->usuario;
-                        
                         break;
                     }
                 }
@@ -52,13 +51,6 @@
                 session_start();
                 $retorno['exito'] = true;
                 $retorno['empleado'] = $_SESSION['empleado']->usuario;
-            }
-            if($retorno['exito']){
-                $retorno['precios'] = $this;
-                
-                $retorno['lugares'] = $this->traerLugares();
-                
-                
             }
             return $retorno;
         }
@@ -75,18 +67,14 @@
         public function estacionar($auto,$id, $lugar = null){
             
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $dia = date("Y-m-d");
-            $hora = date("H:i:s");
 
-            $consulta = $objetoAccesoDatos->RetornarConsulta("INSERT INTO operaciones(idempleado, lugar, patente, dia, entrada)
-                                                              VALUES(:idempleado,:lugar,:patente, :dia, :entrada)");
+            $consulta = $objetoAccesoDatos->RetornarConsulta("INSERT INTO operaciones(idempleado, lugar, patente, entrada)
+                                                              VALUES(:idempleado,:lugar,:patente, NOW())");
             $consulta->bindValue(":idempleado", $id, PDO::PARAM_INT);
             $consulta->bindValue(":lugar", $lugar, PDO::PARAM_INT);
             $consulta->bindValue(":patente", $auto->patente,PDO::PARAM_STR);
-            $consulta->bindValue(":dia", $dia, PDO::PARAM_STR);
-            $consulta->bindValue(":entrada", $hora, PDO::PARAM_STR);
             if($consulta->execute()){
-                return $dia;
+                return $auto;
             }
             else{
                 return false;
@@ -94,16 +82,65 @@
 
 
         }
-        public function sacar($lugar){
+        public function sacar($data){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET salida = :salida WHERE lugar=:numero AND salida = '00:00:00'");
-            $hora = date("H:i:s");
-            $consulta->bindValue(":salida",$hora, PDO::PARAM_STR);
-            $consulta->bindValue(":numero", $lugar, PDO::PARAM_INT);
-            return $consulta->execute();
+            if(isset($data['lugar'])){
+                $lugar = $this->buscar(filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT));
+                $patente = $lugar['patente'];
+            }
+            else{
+                var_dump($data);
+                $patente = filter_var($data['patente'], FILTER_SANITIZE_STR);
+            }
+            $retorno['exito'] = false;
+            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET salida = NOW() WHERE patente= :patente AND salida = '0000-00-00 00:00:00'");
+            $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
+
+            if($consulta->execute()){
+                $precio = $this->calcularPrecio($patente);
+                $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET precio = :precio WHERE patente= :patente AND precio = 0");
+                $consulta->bindValue(":precio", $precio, PDO::PARAM_STR);
+                $consulta->bindValue(":patente",$patente, PDO::PARAM_STR);
+                $retorno['exito'] = false;
+                if($consulta->execute()){
+                    $retorno['precio'] = $precio;
+                    $retorno['auto'] = auto::buscar($patente);
+                    $retorno['exito'] = true;
+                }
+            }
+            return $retorno;
         }
+        // VER QUE PASA SI ENTRA Y SALE ANTES DE LA HORA. 
+        public function calcularPrecio($patente) {
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->RetornarConsulta("SELECT HOUR(TIMEDIFF(salida, entrada)) as `diferencia` FROM operaciones WHERE precio = 0 AND patente = :patente");
+            $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
+            if($consulta->execute()){
+                $numero = $consulta->fetch();    
+            }
 
+            if($numero['diferencia'] > 24){
+                return $this->precioEstadia;
+            }
+            elseif($numero['diferencia'] > 12){
 
+                return $this->precioMedia;
+            }
+            elseif($numero['diferencia'] == 0){
+                return $this->precioHora;
+            }
+            else{
+                return ($numero['diferencia'] * $this->precioHora);
+            }
+
+        }
+        public function buscar($lugar){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->RetornarConsulta("SELECT patente from operaciones WHERE lugar= :lugar AND salida = '0000-00-00 00:00:00'");
+            $consulta->bindValue(":lugar", $lugar, PDO::PARAM_INT);
+            $consulta->execute();
+            return $consulta->fetch();
+        }
                             /* FUNCIONES PRIVADAS */
         private static function traerPatentes(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();

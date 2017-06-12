@@ -13,6 +13,7 @@ $(document).ready(function(){
         $("#clave").val("");
     })
     eventEstacionar();
+    salidaAuto();
 });
 
 
@@ -34,7 +35,7 @@ function cargarSelect(id, elementos){
     });
 }
 
-                                            /* ESTACIONAR */
+                                            /* ESTACIONAMIENTO */
 function tablaLugares(lugares){
         var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Numero </td> <td> Piso </td> <td> Patente </td> <td> Reservado </td> <td> Operar</td> </tr> </thead>";
         tabla += "<tbody>";
@@ -78,20 +79,36 @@ function modalEstacionar(numero){
     $('#ingresoAuto').modal('show');
 
 }
-function sacar(numero){
+function sacar(informacion){
+    var datos ="";
+    if(isNaN(informacion)){
+        datos = {'patente': informacion}
+    }
+    else{
+        datos = {'lugar': informacion }
+    }
     $.ajax({
         url:'estacionamiento',
         type:'DELETE',
         dataType: 'json',
-        data: {lugar: numero }
+        processData: false,
+        data: datos
     }).then(sacado, error)   
 }
 function sacado(data){
-    alert("sacado");
+    if(data.exito){
+        estacionamiento();
+        var sacado  = "<h3 class='text-success text-center'> Salida </h3>"
+        sacado += "<p> <b> Patente </b> " + data.auto[0].patente + "</p>";
+        sacado += "<p> <b> Color </b> " + data.auto[0].color + "</p>";
+        sacado += "<p> <b> Marca </b> " + data.auto[0].marca + "</p>";
+        sacado += "<h4 class='text-success text-center'> Precio: " + data.precio + "</h4>"; 
+    }
+    $("#respuesta").html(sacado);
 }
 function eventEstacionar(){
-    var lugarAuto = $("#lugar").val();
     $("#estacionar").click(function(){
+        var lugarAuto = $("#lugar").val();
         var patenteAuto = $("#patenteAuto").val();
         var colorAuto = $("#color").val();
         var marcaAuto = $("#marca").val();
@@ -103,10 +120,42 @@ function eventEstacionar(){
         }).then(estacionado, error);
     })
 }
-function estacionado(data){
-    alert("estacionado");
+
+function modalSalida(){
+    $("#modalSalida").modal('show');
 }
 
+function salidaAuto(){
+    $("#salida").click(function(){
+        var patente = ("#patenteSalida").val();
+        sacar(patente);
+    })
+}
+function estacionado(data){
+    alert("estacionado");
+    estacionamiento();
+}
+
+function estacionamiento(){
+    $.ajax({
+        url:'estacionamiento',
+        type:'GET',
+        dataType:'json',
+    }).then(estacionamientOk,error)
+}
+
+function estacionamientOk(data){
+    if(data.exito){
+        var tabla =tablaLugares(data.lugares);
+        $("#info").html(tabla);
+        var precio = "<h3 class='text-success text-center'> Precios </h3>";
+        precio+= "<p> <b> Hora: </b>" + data.precios.precioHora + "</p>";
+        precio+= "<p> <b> Media Estadia: </b>" + data.precios.precioMedia + "</p>";
+        precio+= "<p> <b> Estadia: </b>" + data.precios.precioEstadia + "</p>";
+        $("#precios").html(precio);
+    }
+
+}
 
                             /* EMPLEADOS */
 function registrado(data){
@@ -258,29 +307,20 @@ function actualizado(data){
 //                                         Funciones de Logueo.
 // TODO Checkear que hacer cuando se refresca la pagina
 // TODO Ver que hacer cuando no se desloguea normalmente en  y queda un registro colgado(PHP)
-function refresh(){
-    alert("guardando refresh");
-}
+
 function logueado(data){
-    
     if(data.exito){
         var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.empleado + ' </h4>';
         htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>';
-
-        var estado = "<h3 class='text-success text-center'> Precios </h3>";
-        estado+= "<p> <b> Hora: </b>" + data.precios.precioHora + "</p>";
-        estado+= "<p> <b> Media Estadia: </b>" + data.precios.precioMedia + "</p>";
-        estado+= "<p> <b> Estadia: </b>" + data.precios.precioEstadia + "</p>";
-
-        tabla =tablaLugares(data.lugares)
-
-        $("#info").html(tabla);
-        $("#estado").html(estado);
+        
+        estacionamiento();
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
         if(data.empleado == 'admin'){
             $("#empleados").removeClass("hidden");
         }
+        $("#autos").removeClass("hidden");
+        $("#operaciones").removeClass("hidden");
         desloguear();
     }
 
@@ -289,7 +329,6 @@ function logueado(data){
 
 
 function deslogueado(data){
-    
     if(data.exito){
         var htmlDeslogueado =' <form class="navbar-form navbar-right" >';
         htmlDeslogueado +='<div class="form-group">';
@@ -300,8 +339,11 @@ function deslogueado(data){
         $("#logout").html(htmlDeslogueado);
         $("#logout").attr('id', 'log');
         $("#empleados").addClass('hidden');
+        $("#autos").addClass("hidden");
+        $("#operaciones").addClass("hidden");
         $("#info").html("");
-        $("#estado").html("");
+        $("#precios").html("");
+        $("#respuesta").html("");
         loguear();
     }
     else{
