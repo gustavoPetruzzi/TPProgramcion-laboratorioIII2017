@@ -75,8 +75,16 @@ function buttonEstacionar(numero, estacionar=false){
 }
 
 function modalEstacionar(numero){
-    $("#lugar").val(numero);
-    $('#ingresoAuto').modal('show');
+    if(numero){
+        $("#lugar").val(numero);
+    
+    }
+    else{
+        $("#lugar").removeAttr("disabled");
+    }
+
+    $('#ingresoAuto').modal('show');    
+        
 
 }
 function sacar(informacion){

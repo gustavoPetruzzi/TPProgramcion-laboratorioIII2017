@@ -7,6 +7,11 @@ require_once './clases/empleado.php';
 require_once './clases/estacionamiento.php';
 $app = new \Slim\App;
 
+$app->get('/', function (Request $request, Response $response) {
+    return $response->withRedirect("./index.html");
+    
+});
+
 $app->get('/estacionamiento', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
