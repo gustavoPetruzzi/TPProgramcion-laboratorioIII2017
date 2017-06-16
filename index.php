@@ -2,8 +2,8 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require './vendor/autoload.php';
-require_once './clases/empleado.php';
+require './clases/vendor/autoload.php';
+require_once './clases/empleadoApi.php';
 require_once './clases/estacionamiento.php';
 $app = new \Slim\App;
 
@@ -66,31 +66,16 @@ $app->delete('/estacionamiento', function (Request $request, Response $response)
 
 
 
+                                        
+$app->group('/empleados', function(){
                                         /* LOGIN */
-$app->post('/login', function (Request $request, Response $response) {
-    $estacionamiento = estacionamiento::traerEstacionamiento();
-    $data = $request->getParsedBody();
-    $usuarioLog = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
-    $passLog = filter_var($data['pass'], FILTER_SANITIZE_STRING);
-
-    $retorno = $estacionamiento->loguear($usuarioLog, $passLog);
-    return $response->withJson($retorno);
-});
+    $this->post('/login', \empleadoApi::class . ':loguearEmpleadoApi');
+    $this->get('/deslogout', \empleadosApi::class. ':logoutEmpleadoApi');
+});                                
 
 
-$app->post('/desloguear', function (Request $request, Response $response) {
-    session_start();
-    $retorno['exito'] = false;
-    if(isset($_SESSION['empleado'])){
-        $id = $_SESSION['empleado']->id;
-        $retorno['exito'] = empleado::registrarLogin($id, false);
-        
-        $_SESSION['empleado'] = null;
-        session_destroy();        
-    }
-    
-    return $response->withJson($retorno);
-});
+
+
 
 
 

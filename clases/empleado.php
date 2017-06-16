@@ -4,14 +4,18 @@
     {
         
         public $id;
+        public $nombre;
+        public $apellido;
         public $usuario;
         private $_pass;
         public $activo;
 
-        function __construct( $usuario = NULL, $pass = NULL, $activo = NULL)
+        function __construct( $nombre = NULL, $apellido =NULL, $usuario = NULL, $pass = NULL, $activo = NULL)
         {
-            if($usuario != NULL && $pass != NULL){
+            if( $nombre != NULL &&  $apellido != NULL && $usuario != NULL && $pass != NULL && $activo != NULL){
                 $this->usuario = $usuario;
+                $this->nombre = $nombre;
+                $this->apellido = $apellido;
                 $this->_pass = $pass;
                 $this->activo = $activo;
             }
@@ -29,7 +33,7 @@
 
         public  function modificarEmpleado(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET usuario =:usuario, pass=:pass, activo = :activo WHERE id =:id");
+            $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET nombre =:nombre, apellido =:apellido, usuario =:usuario, pass=:pass, activo = :activo WHERE id =:id");
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->_pass, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
@@ -39,11 +43,13 @@
 
         public  function guardarEmpleado(){
             $objetoGuardarDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (usuario, pass, activo)"
-                                                             . " VALUES(:usuario, :pass, :activo)");
+            $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (nombre, apellido,usuario, pass, activo)"
+                                                             . " VALUES(:nombre, :apellido, :usuario, :pass, :activo)");
             $activo = 0;                                                             
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->getPass(), PDO::PARAM_STR);
+            $consulta->bindValue(":nombre",$this->nombre, PDO::PARAM_STR);
+            $consulta->bindValue(":apellido",$this->apellido, PDO::PARAM_STR);
             if($this->activo){
                 $activo = 1;
             }
@@ -55,14 +61,24 @@
         public static function TraerEmpleados(){
             $listaEmpleados = array();
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id as id, usuario as usuario, pass as _pass, activo as activo FROM empleados");
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id, nombre, apellido, usuario , pass as _pass, activo  FROM empleados");
             $consulta->execute();
             $listaEmpleados= $consulta->fetchAll(PDO::FETCH_CLASS, "empleado");
             return $listaEmpleados;
         }
+        public static function TraerEmpleado($usuario, $pass){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id,nombre, apellido, usuario, pass as _pass, activo FROM empleados WHERE usuario = :usuario AND pass =:pass");
+            $consulta->bindValue(":usuario",$usuario,PDO::PARAM_STR);
+            $consulta->bindValue(":pass",$pass,PDO::PARAM_STR);
+            $consulta->setFetchMode(PDO::FETCH_CLASS, "empleado");
+            $consulta->execute();
+            $empleado = $consulta->fetch();
+            return $empleado;
+        }
         public static function buscarEmpleado($id){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id as id, usuario as usuario, pass as _pass FROM empleados
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id , nombre, apellido, usuario, pass as _pass, activo FROM empleados
                                                              WHERE id = :id");
             $consulta->bindValue(":id", $id, PDO::PARAM_INT);
             $consulta->setFetchMode(PDO::FETCH_CLASS, "empleado");
@@ -97,7 +113,7 @@
             }
         }
 
-        public static function registrarLogin($id, $entrada = true){
+        public function registrarLogin($entrada = true){
             $objetoAccesoDatos =accesoDatos::DameUnObjetoAcceso();
             
             $fecha = date('H:i:s');
@@ -110,7 +126,7 @@
             else {
                 $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida= DATE_FORMAT(NOW(),'%H:%i:%s') WHERE salida = '00:00:00' AND idempleado=:id");
             }
-            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
             return $consulta->execute();
         }
         public static function logueos($id=null){

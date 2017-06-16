@@ -54,7 +54,7 @@ function loguear(){
         var usuario = $("#usuario").val();
         var pass = $("#pass").val();
         $.ajax({
-            url: "login",
+            url: "empleados/login",
             type:"POST",
             data: { usuario : usuario, pass: pass},
 
