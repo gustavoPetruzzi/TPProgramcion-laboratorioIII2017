@@ -1,2 +1,3 @@
 vendor/*
 bower_components/bootstrapvalidator
+bower_components/datatables.net
