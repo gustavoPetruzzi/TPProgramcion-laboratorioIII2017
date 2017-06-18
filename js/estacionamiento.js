@@ -26,7 +26,7 @@ function tablaLugares(lugares){
         return tabla;
 }
 
-function buttonEstacionar(numero, estacionar=false){
+function buttonEstacionar(numero, estacionar){
     var button = "<button class='btn";
     if(estacionar){
         button += " btn-success' onclick='modalEstacionar("+ numero +")'> estacionar </button>";

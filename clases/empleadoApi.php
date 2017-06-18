@@ -1,7 +1,8 @@
 <?php
 require_once 'empleado.php';
 require_once 'autentificadorJwt.php';
-
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 require_once 'vendor/autoload.php';
 
 /**
@@ -20,6 +21,7 @@ class empleadoApi extends empleado
             $retorno['token'] = autentificadorJwt::crearToken(array(
                 'id'=> $empleado->id,
                 'usuario'=> $empleado->usuario,
+                'admin' => $empleado->admin,
             ));
             $retorno['usuario'] = $empleado->usuario;
             $retorno['id'] = $empleado->id;
@@ -27,13 +29,36 @@ class empleadoApi extends empleado
         return $response->withJson($retorno);
     }
 
-    public static function logoutEmpleadoApi(Request $request, Response $response){
-        $data = $request->getParsedBody();
-        $empleado = empleado::buscarEmpleado(filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT));
+    public static function logoutEmpleadoApi($request, $response, $args){
+        
+        $token = $args['token'];
+        autentificadorJwt::verificarToken($token);
+        $datos = autentificadorJwt::extraerData($token);
+        $empleado = empleado::buscarEmpleado($datos->id);
         $retorno['exito'] = false;
         if($empleado){
             $retorno['exito'] = $empleado->registrarLogin();
         }
+        return $response->withJson($retorno);
+        
+    }
+
+
+    public static function listaEmpleadosApi($request, $response, $args){
+        $token = $args['token'];
+        autentificadorJwt::verificarToken($token);
+        $datos = autentificadorJwt::extraerData($token);
+        
+        $retorno['exito'] = false;
+        if(isset($datos) && $datos->admin == true){  
+            $empleados = empleado::TraerEmpleados();  
+            if(isset($empleados)){
+                $retorno['exito'] = true;
+                $retorno['empleados'] = $empleados;
+            }
+        }
+        
+        
         return $response->withJson($retorno);
     }
 }

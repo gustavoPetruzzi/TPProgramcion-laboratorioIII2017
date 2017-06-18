@@ -68,9 +68,12 @@ $app->delete('/estacionamiento', function (Request $request, Response $response)
 
                                         
 $app->group('/empleados', function(){
-                                        /* LOGIN */
     $this->post('/login', \empleadoApi::class . ':loguearEmpleadoApi');
-    $this->get('/deslogout', \empleadosApi::class. ':logoutEmpleadoApi');
+    $this->get('/deslogout/{token}', \empleadoApi::class. ':logoutEmpleadoApi');
+
+    $this->get('/lista/{token}', \empleadoApi::class . ':listaEmpleadosApi');
+
+    //$this->get('/logueos')
 });                                
 
 
