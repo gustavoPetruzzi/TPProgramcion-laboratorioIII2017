@@ -1,12 +1,13 @@
 function logueado(data){
     if(data.exito){
-        var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.empleado + ' </h4>';
+        localStorage.setItem('token', data.token);
+        var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.usuario + ' </h4>';
         htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>';
         
         estacionamiento();
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
-        if(data.empleado == 'admin'){
+        if(data.usuario == 'admin'){
             $("#empleados").removeClass("hidden");
         }
         $("#autos").removeClass("hidden");
@@ -63,9 +64,10 @@ function loguear(){
 }
 function desloguear(){
     $("#desLogin").click(function(){ 
+        urlLogout = "empleados/deslogout/" + localStorage.getItem('token');
         $.ajax({
-            url:"desloguear",
-            type:"POST",
+            url:urlLogout,
+            type:"GET",
         }).then(deslogueado, error)
     })
 }

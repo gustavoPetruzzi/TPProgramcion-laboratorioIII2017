@@ -8,14 +8,14 @@
     {
 
         private static $claveSecreta = "una-clave-secreta";
-        private static $alg = "HS256";
+        private static $algoritmo = "HS256";
         public static function crearToken($datos){
             $datos = $datos;
             
             $ahora = time();
             $payload = array(
                 'iat'=> $ahora,
-                'exp'=> $ahora + 60 *30,
+                'exp'=> $ahora + 30,
                 'data'=>$datos,
                 'app'=> 'apiRestJwt'
             );
@@ -23,15 +23,21 @@
         }
         public static function verificarToken($token){
             try{
-                $decodificado = JWT::decode($token, self::$claveSecreta, [self::$algo]);
+                $decodificado = JWT::decode($token, self::$claveSecreta, [self::$algoritmo]);
+                return true;
             }
             catch(Exception $e){
-                echo $e;
+                 return false;
             }
 
         }
-        public static function verificarTokenViejo($token){
-
+        public static function extraerData($token){
+            try{
+                return JWT::decode($token, self::$claveSecreta, [self::$algoritmo] )->data;    
+            }
+            catch(Exception $e){
+                echo $e->getMessage();
+            }
         }
     }
     
