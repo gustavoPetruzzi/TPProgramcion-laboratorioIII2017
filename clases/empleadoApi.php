@@ -9,7 +9,7 @@ require_once 'vendor/autoload.php';
  */
 class empleadoApi extends empleado
 {
-    public static function loguearEmpleadoApi(Request $request, Response $response){
+    public static function loguearEmpleadoApi($request, $response, $args){
         $data = $request->getParsedBody();
         $usuario = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
         $pass = filter_var($data['pass'], FILTER_SANITIZE_STRING);
