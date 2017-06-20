@@ -5,6 +5,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 require './clases/vendor/autoload.php';
 require_once './clases/empleadoApi.php';
 require_once './clases/estacionamiento.php';
+require_once './clases/verificar.php';
 $app = new \Slim\App;
 
 $app->get('/', function (Request $request, Response $response) {
@@ -64,17 +65,19 @@ $app->delete('/estacionamiento', function (Request $request, Response $response)
 
 
 
-
-
-                                        
-$app->group('/empleados', function(){
+$app->group('/login', function(){
+    // ACA GOLPEO REGISTROS
     $this->post('/login', \empleadoApi::class . ':loguearEmpleadoApi');
     $this->get('/deslogout/{token}', \empleadoApi::class. ':logoutEmpleadoApi');
 
+})->add()->add(\verificar::class . ':verificarDatosUsuarios');
+
+                                        
+$app->group('/empleados', function(){
     $this->get('/lista/{token}', \empleadoApi::class . ':listaEmpleadosApi');
 
-    //$this->get('/logueos')
-});                                
+    $this->get('/logueos')->add(\authAdmin::class);
+});
 
 
 

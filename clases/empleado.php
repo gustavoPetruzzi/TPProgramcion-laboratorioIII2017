@@ -69,6 +69,7 @@
             $listaEmpleados= $consulta->fetchAll(PDO::FETCH_CLASS, "empleado");
             return $listaEmpleados;
         }
+        
         public static function TraerEmpleado($usuario, $pass){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id,nombre, apellido, usuario, pass as _pass, activo, admin FROM empleados WHERE usuario = :usuario AND pass =:pass");
