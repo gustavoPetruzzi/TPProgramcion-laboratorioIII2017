@@ -15,7 +15,7 @@
             $ahora = time();
             $payload = array(
                 'iat'=> $ahora,
-                'exp'=> $ahora + 30,
+                'exp'=> $ahora +60 * 30,
                 'data'=>$datos,
                 'app'=> 'apiRestJwt'
             );
@@ -35,7 +35,7 @@
             try{
                 return JWT::decode($token, self::$claveSecreta, [self::$algoritmo] )->data;    
             }
-            catch(Exception $e){
+            catch(\Firebase\JWT\ExpiredException $e){
                 echo $e->getMessage();
             }
         }

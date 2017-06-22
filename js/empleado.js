@@ -23,9 +23,10 @@ function registrarEmpleado(){
 
 
 function traerEmpleados(){
-    urlEmpleado = 'empleados/lista/' + localStorage.getItem('token');
+    
     $.ajax({
-        url:urlEmpleado,
+        url:'empleados/lista',
+        headers: { token : localStorage.getItem('token')},
         type: "GET",
         dataType: 'json'
         

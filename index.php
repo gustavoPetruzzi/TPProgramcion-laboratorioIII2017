@@ -65,19 +65,28 @@ $app->delete('/estacionamiento', function (Request $request, Response $response)
 
 
 
-$app->group('/login', function(){
-    // ACA GOLPEO REGISTROS
-    $this->post('/login', \empleadoApi::class . ':loguearEmpleadoApi');
-    $this->get('/deslogout/{token}', \empleadoApi::class. ':logoutEmpleadoApi');
+$app->group('/log', function(){
 
-})->add()->add(\verificar::class . ':verificarDatosUsuarios');
+    $this->post('/in', \empleadoApi::class . ':loguearEmpleadoApi');
+    $this->get('/out', \empleadoApi::class. ':logoutEmpleadoApi');
+
+})->add(\verificar::class . ':datosUsuarios');
 
                                         
 $app->group('/empleados', function(){
-    $this->get('/lista/{token}', \empleadoApi::class . ':listaEmpleadosApi');
+    $this->get('/lista', \empleadoApi::class . ':listaEmpleadosApi');
 
-    $this->get('/logueos')->add(\authAdmin::class);
-});
+    $this->post('/alta', \empleadoApi::class . ':alta');
+    $this->post('/modificar', \empleadoApi::class . ':modificar');
+    $this->delete('/borrar/{id}', \empleadoApi::class . ':borrar');
+
+    $this->get('/logueos/{id}',\empleadoApi::class . ':registrosLogueos');
+    $this->get('/logueos',\empleadoApi::class . ':registrosLogueos');
+})->add(\verificar::class . ':datosNuevo')->add(\verificar::class . ':admin')->add(\verificar::class . ':token');
+
+$app->group('/estacionamiento', function (){
+    //$this->get('/lugares',\)
+})->add(\verificar::class . ':token');
 
 
 

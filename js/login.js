@@ -55,7 +55,7 @@ function loguear(){
         var usuario = $("#usuario").val();
         var pass = $("#pass").val();
         $.ajax({
-            url: "empleados/login",
+            url: "log/in",
             type:"POST",
             data: { usuario : usuario, pass: pass},
 
@@ -64,10 +64,11 @@ function loguear(){
 }
 function desloguear(){
     $("#desLogin").click(function(){ 
-        urlLogout = "empleados/deslogout/" + localStorage.getItem('token');
+        urlLogout = 'log/out';
         $.ajax({
             url:urlLogout,
             type:"GET",
+            headers: { token : localStorage.getItem('token')},
         }).then(deslogueado, error)
     })
 }

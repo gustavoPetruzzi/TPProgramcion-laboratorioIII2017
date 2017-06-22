@@ -13,7 +13,7 @@
 
         function __construct( $nombre = NULL, $apellido =NULL, $usuario = NULL, $pass = NULL, $activo = NULL, $admin = NULL)
         {
-            if( $nombre != NULL &&  $apellido != NULL && $usuario != NULL && $pass != NULL && $activo != NULL && $admin != NULL){
+            if( $nombre != NULL &&  $apellido != NULL && $usuario != NULL && $pass != NULL && $activo !== NULL && $admin !== NULL){
                 $this->usuario = $usuario;
                 $this->nombre = $nombre;
                 $this->apellido = $apellido;
@@ -36,29 +36,41 @@
         public  function modificarEmpleado(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE empleados SET nombre =:nombre, apellido =:apellido, usuario =:usuario, pass=:pass, activo = :activo WHERE id =:id");
+            $consulta->bindValue(":nombre", $this->nombre, PDO::PARAM_STR);
+            $consulta->bindValue(":apellido", $this->apellido, PDO::PARAM_STR);
+
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->_pass, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
             $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
-            return $consulta->execute();
+            $retorno['exito'] = $consulta->execute();
+            if($retorno['exito'] && $consulta->rowCount() == 0){
+                $retorno['exito'] = false;
+                $retorno['mensaje'] = "No existe nadie con ese id";
+            }
+            return $retorno;
         }
 
         public  function guardarEmpleado(){
             $objetoGuardarDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoGuardarDatos->RetornarConsulta("INSERT INTO empleados (nombre, apellido,usuario, pass, activo, admin)"
                                                              . " VALUES(:nombre, :apellido, :usuario, :pass, :activo, :admin)");
-            $activo = 0;                                                             
+            //$activo = 0;
+            $consulta->bindValue(":nombre", $this->nombre, PDO::PARAM_STR);                                                             
             $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->getPass(), PDO::PARAM_STR);
             $consulta->bindValue(":nombre",$this->nombre, PDO::PARAM_STR);
             $consulta->bindValue(":apellido",$this->apellido, PDO::PARAM_STR);
             $consulta->bindValue(":admin", $this->admin, PDO::PARAM_STR);
-            if($this->activo){
-                $activo = 1;
+            $consulta->bindValue(":activo", $this->activo, PDO::PARAM_INT);
+
+
+            $retorno['exito'] = $consulta->execute();
+            if($retorno['exito'] && $consulta->rowCount() == 0){
+                $retorno['exito'] = false;
+                $retorno['mensaje'] = "No pudo guardarse";
             }
-            
-            $consulta->bindValue(":activo", $activo, PDO::PARAM_INT);
-            return $consulta->execute();
+            return $retorno;
         }
 
         public static function TraerEmpleados(){
@@ -90,31 +102,20 @@
             $empleado = $consulta->fetch();
             return $empleado;
         }
-        /*
-        //PARA OBTENER ID despues de crearlo.
-        private static function buscarEmpleadoUsuarioPass($user, $pass){
-            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id as id, usuario as usuario, pass as _pass FROM empleados
-                                                             WHERE user = :user AND pass = :pass");
-            $consulta->bindValue(":user", $user, PDO::PARAM_STR);
-            $consulta->bindValue(":pass", $pass, PDO::PARAM_STR);
-            $consulta->setFetchMode(PDO::FETCH_CLASS, "empleado");
-            $consulta->execute();
-            $empleado = $consulta->fetch();
-            return $empleado;
-        }
-        */
+        
 
-        public  function borrar(){
+        public static function borrarEmpleado($id){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->retornarConsulta("DELETE FROM empleados WHERE id= :id");
-            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
-            if($consulta->execute() > 0){
-                return true;
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+            $retorno['exito'] = $consulta->execute();
+            
+            if($retorno['exito'] && $consulta->rowCount() == 0 ){
+                $retorno['mensaje'] = "No existe nadie  con ese id";
+                $retorno['exito'] = false;
             }
-            else{
-                return false;
-            }
+                        
+            return $retorno;
         }
 
         public function registrarLogin($entrada = true){
@@ -134,6 +135,7 @@
             return $consulta->execute();
         }
         public static function logueos($id=null){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             if(isset($id)){
                 $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
                                                                   WHERE loginempleados.idempleado = empleados.id AND id = :id");
@@ -143,7 +145,11 @@
                 $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
                                                                   WHERE loginempleados.idempleado = empleados.id");
             }
-            $consulta->execute();
+            $retorno['exito'] = $consulta->execute();
+            if($retorno['exito'] && $consulta->rowCount() == 0){
+                $retorno['exito'] = false;
+                $retorno['mensaje'] = "No hay logueos";
+            }
             return $consulta->fetchAll();
         }
 
