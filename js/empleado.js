@@ -9,7 +9,9 @@ function registrarEmpleado(){
     $('#agregarEmpleado').modal('show');
     $("#modificar").attr('id', 'register');
     $("#register").click(function(){
-        var empleado = $("#usuarioNuevo").val();
+        var nombre = $("#nombreNuevo").val();
+        var apellido = $("#apellidoNuevo").val();
+        var usuario = $("#usuarioNuevo").val();
         var clave = $("#clave").val();
         $.ajax({
             url:"empleados",
@@ -109,7 +111,17 @@ function modificado(data){
     }
 }
 
+function logueosEmpleados(){
+    $.ajax({
+        url: 'empleados/logueos',
+        headers: { token : localStorage.getItem('token')},
+        type: "GET",
+    }).then(tablaLogueos, error);
+}
 
+function tablaLogueos(data){
+    console.log(data);
+}
 
 
 

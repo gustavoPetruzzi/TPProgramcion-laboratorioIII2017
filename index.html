@@ -29,12 +29,20 @@
                     <input type="text" class="form-control hidden" placeholder="id" name="id" id="idEmpleado" disabled>
                 </div>
                 <div class="form-group">
+                    <input type="text" class="form-control" placeholder="nombre" name="nombre" id="nombreNuevo">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="apellido" name="apellido" id="apellidoNuevo">
+                </div>
+                <div class="form-group">
                     <input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuarioNuevo">
                 </div>
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="clave" name="clave" id="clave">
                 </div>
-                
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="admin" name="admin" id="adminNuevo">
+                </div>  
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default" type="button" data-dismiss="modal" id="register" name="modalEmpleado"> Registrar </button>
@@ -112,6 +120,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="" class=""  onclick="traerEmpleados(); return false;">Traer Empleados</a></li>
                         <li><a href="" class="" onclick="registrarEmpleado(); return false;">Agregar</a></li>
+                        <li><a href="" class="" onclick="logueosEmpleados(); return false;">Logueos</a></li>
                         
                     </ul>
                 </li>

@@ -22,9 +22,7 @@
                     }
                 }
                 else {
-                    $retorno['exito'] = false;
-                    $retorno['mensaje'] = "Datos erroneos";
-                    return $response->withJson($retorno);
+                    return $response->withJson( "Datos erroneos", 400);
                 }
             }
             else{

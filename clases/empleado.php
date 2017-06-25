@@ -57,9 +57,9 @@
                                                              . " VALUES(:nombre, :apellido, :usuario, :pass, :activo, :admin)");
             //$activo = 0;
             $consulta->bindValue(":nombre", $this->nombre, PDO::PARAM_STR);                                                             
-            $consulta->bindValue(":usuario", $this->usuario, PDO::PARAM_STR);
+            $consulta->bindValue(":apellido", $this->apellido, PDO::PARAM_STR);
             $consulta->bindValue(":pass", $this->getPass(), PDO::PARAM_STR);
-            $consulta->bindValue(":nombre",$this->nombre, PDO::PARAM_STR);
+            $consulta->bindValue(":usuario",$this->usuario, PDO::PARAM_STR);
             $consulta->bindValue(":apellido",$this->apellido, PDO::PARAM_STR);
             $consulta->bindValue(":admin", $this->admin, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_INT);
@@ -108,11 +108,11 @@
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->retornarConsulta("DELETE FROM empleados WHERE id= :id");
             $consulta->bindValue(":id", $id, PDO::PARAM_INT);
-            $retorno['exito'] = $consulta->execute();
             
-            if($retorno['exito'] && $consulta->rowCount() == 0 ){
-                $retorno['mensaje'] = "No existe nadie  con ese id";
-                $retorno['exito'] = false;
+            $retorno = $consulta->execute();
+            if($retorno && $consulta->rowCount() == 0 ){
+                
+                $retorno = false;
             }
                         
             return $retorno;
@@ -145,19 +145,22 @@
                 $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
                                                                   WHERE loginempleados.idempleado = empleados.id");
             }
-            $retorno['exito'] = $consulta->execute();
-            if($retorno['exito'] && $consulta->rowCount() == 0){
-                $retorno['exito'] = false;
-                $retorno['mensaje'] = "No hay logueos";
-            }
+            $consulta->execute();
+            
             return $consulta->fetchAll();
         }
 
-        public  function operaciones($fecha){
-            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE dia = :fecha AND idempleado = :id");
-            $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
-            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
-            $consulta->execute();
+        public function operaciones($desde, $hasta= NULL){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            if(!isset($hasta)){
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE dia = :fecha AND idempleado = :id");
+                $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
+                $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
+                $consulta->execute();    
+            }
+            else{
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE");
+            }
             return $consulta->fetchAll();
         }
     }

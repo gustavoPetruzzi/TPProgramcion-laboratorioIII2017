@@ -13,6 +13,15 @@ $app->get('/', function (Request $request, Response $response) {
     
 });
 
+$app->add(function($request, $response, $next){
+    $response = $next($request, $response);
+
+    return $response
+            ->withHeader('Access-Control-Allow-Origin', 'http://gustavopetruzziutn.hol.es/')
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+});
+
 $app->get('/estacionamiento', function (Request $request, Response $response) {
     session_start();
     $retorno['exito'] = false;
@@ -64,7 +73,7 @@ $app->delete('/estacionamiento', function (Request $request, Response $response)
 
 
 
-
+                        //LOGIN
 $app->group('/log', function(){
 
     $this->post('/in', \empleadoApi::class . ':loguearEmpleadoApi');
@@ -72,7 +81,7 @@ $app->group('/log', function(){
 
 })->add(\verificar::class . ':datosUsuarios');
 
-                                        
+                                    //EMPLEADOS
 $app->group('/empleados', function(){
     $this->get('/lista', \empleadoApi::class . ':listaEmpleadosApi');
 
@@ -83,6 +92,7 @@ $app->group('/empleados', function(){
     $this->get('/logueos/{id}',\empleadoApi::class . ':registrosLogueos');
     $this->get('/logueos',\empleadoApi::class . ':registrosLogueos');
 })->add(\verificar::class . ':datosNuevo')->add(\verificar::class . ':admin')->add(\verificar::class . ':token');
+
 
 $app->group('/estacionamiento', function (){
     //$this->get('/lugares',\)
