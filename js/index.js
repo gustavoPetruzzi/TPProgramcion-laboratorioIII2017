@@ -8,7 +8,7 @@ $(document).ready( function (){
     eventEstacionar();
     salidaAuto();
     modalEstacionarOnClose();
-    //$('#myTable').DataTable();
+    
 });
 
 

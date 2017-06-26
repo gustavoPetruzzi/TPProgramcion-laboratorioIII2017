@@ -7,7 +7,7 @@
         public $nombre;
         public $apellido;
         public $usuario;
-        private $_pass;
+        public  $_pass;
         public $activo;
         public $admin;
 
@@ -43,10 +43,9 @@
             $consulta->bindValue(":pass", $this->_pass, PDO::PARAM_STR);
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_STR);
             $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
-            $retorno['exito'] = $consulta->execute();
-            if($retorno['exito'] && $consulta->rowCount() == 0){
-                $retorno['exito'] = false;
-                $retorno['mensaje'] = "No existe nadie con ese id";
+            $retorno = $consulta->execute();
+            if($retorno && $consulta->rowCount() == 0){
+                $retorno = false;
             }
             return $retorno;
         }
@@ -65,10 +64,9 @@
             $consulta->bindValue(":activo", $this->activo, PDO::PARAM_INT);
 
 
-            $retorno['exito'] = $consulta->execute();
-            if($retorno['exito'] && $consulta->rowCount() == 0){
-                $retorno['exito'] = false;
-                $retorno['mensaje'] = "No pudo guardarse";
+            $retorno = $consulta->execute();
+            if($retorno && $consulta->rowCount() == 0){
+                $retorno = false;
             }
             return $retorno;
         }
@@ -76,7 +74,7 @@
         public static function TraerEmpleados(){
             $listaEmpleados = array();
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id, nombre, apellido, usuario , activo, admin  FROM empleados");
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT id, nombre, apellido, usuario, pass as _pass, activo, admin  FROM empleados");
             $consulta->execute();
             $listaEmpleados= $consulta->fetchAll(PDO::FETCH_CLASS, "empleado");
             return $listaEmpleados;
@@ -121,11 +119,11 @@
         public function registrarLogin($entrada = true){
             $objetoAccesoDatos =accesoDatos::DameUnObjetoAcceso();
             
-            $fecha = date('H:i:s');
+            
             if($entrada){
-                $dia = date('Y-m-d');
+                
                 $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO loginempleados (idempleado, dia, entrada) 
-                                                              VALUES (:id,  DATE_FORMAT(NOW(),'%Y:%m:%d'), DATE_FORMAT(NOW(),'%H:%i:%s') ) ");
+                                                                  VALUES (:id,  DATE_FORMAT(NOW(),'%Y:%m:%d'), DATE_FORMAT(NOW(),'%H:%i:%s') ) ");
                 
             }
             else {

@@ -91,6 +91,7 @@ $app->group('/empleados', function(){
 
     $this->get('/logueos/{id}',\empleadoApi::class . ':registrosLogueos');
     $this->get('/logueos',\empleadoApi::class . ':registrosLogueos');
+    $this->patch('/actualizar/{id}', \empleadoApi::class . ':actualizar');
 })->add(\verificar::class . ':datosNuevo')->add(\verificar::class . ':admin')->add(\verificar::class . ':token');
 
 

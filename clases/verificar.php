@@ -56,19 +56,25 @@
                 $request = $request->withAttribute('datos', $datos);
                 return $next($request, $response);
             }
-            else{
-                $retorno['exito'] = false;
-                $retorno['mensaje'] = "No se ha enviado ningun token";
-            }
-            return $response->withJson($retorno);
+            return $response->withJson("no se ha enviado ningun token", 400);
         }
 
         public static function datosNuevo($request, $response, $next){
+            if(isset($data['id'])){
+                $id = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
+                if($id){
+                    $request = $request->withAttribute('id', $id);    
+                }
+                else{
+                    return $response->withJson('id invalido', 400);
+                }
+                
+            }
             if($request->isPost()){
                 $data = $request->getParsedBody();
+
                 
-                if(isset($data['id']) && isset($data['nombre']) && isset($data['apellido']) && isset($data['usuario']) && isset($data['pass']) && isset($data['activo']) && isset($data['admin'])){
-                    $id = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
+                if(isset($data['nombre']) && isset($data['apellido']) && isset($data['usuario']) && isset($data['pass']) && isset($data['activo']) && isset($data['admin'])){
                     $nombre = filter_var($data['nombre'], FILTER_SANITIZE_STRING);
                     $apellido = filter_var($data['apellido'], FILTER_SANITIZE_STRING);
                     $usuario = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
@@ -76,8 +82,7 @@
                     $activo = filter_var($data['activo'], FILTER_VALIDATE_BOOLEAN);
                     $admin = filter_var($data['admin'], FILTER_VALIDATE_BOOLEAN);
                     
-                    if($id && $nombre && $apellido && $usuario && $pass && $activo){
-                        $request = $request->withAttribute('id', $id);
+                    if($nombre && $apellido && $usuario && $pass && $activo){ 
                         $request = $request->withAttribute('usuario', $usuario);
                         $request = $request->withAttribute('nombre', $nombre);
                         $request = $request->withAttribute('apellido', $apellido);
@@ -87,15 +92,13 @@
                         return $next($request, $response);
                     }
                     else{
-                        $retorno['exito'] = false;
-                        $retorno['mensaje'] = "Alguno de los datos son erroneos";
-                        return $response->withJson($retorno);
+                        $retorno = "Alguno de los datos son erroneos";
+                        return $response->withJson($retorno, 400);
                     }
                 }
                 else{
-                    $retorno['exito'] = false;
-                    $retorno['mensaje'] = "No se pasaron los datos suficientes";
-                    return $response->withJson($retorno);
+                    $retorno = "No se pasaron los datos suficientes";
+                    return $response->withJson($retorno, 400);
                 }
             }
             else{

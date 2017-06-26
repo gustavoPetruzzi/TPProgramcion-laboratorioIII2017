@@ -14,6 +14,9 @@ function logueado(data){
         $("#operaciones").removeClass("hidden");
         desloguear();
     }
+    else{
+        alert(data.mensaje);
+    }
 
 }
 

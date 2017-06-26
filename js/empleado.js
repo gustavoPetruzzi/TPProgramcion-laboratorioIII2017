@@ -9,15 +9,27 @@ function registrarEmpleado(){
     $('#agregarEmpleado').modal('show');
     $("#modificar").attr('id', 'register');
     $("#register").click(function(){
-        var nombre = $("#nombreNuevo").val();
-        var apellido = $("#apellidoNuevo").val();
-        var usuario = $("#usuarioNuevo").val();
+        var nombreNuevo = $("#nombreNuevo").val();
+        var apellidoNuevo = $("#apellidoNuevo").val();
+        var usuarioNuevo = $("#usuarioNuevo").val();
+        var admin = false;
+        if($('#adminNuevo').is(':checked')){
+            adminNuevo = true;
+        }
         var clave = $("#clave").val();
         $.ajax({
-            url:"empleados",
+            url:"empleados/alta",
+            headers: { token : localStorage.getItem('token')},
             type:"POST",
             dataType:'json',
-            data: {usuario: empleado, pass: clave}
+            data: { 
+                nombre: nombreNuevo,
+                usuario: usuarioNuevo, 
+                apellido: apellidoNuevo,
+                pass: clave,
+                activo: true,
+                admin: admin
+            }
         }).then(registrado,error);
     })
 }
@@ -37,7 +49,7 @@ function traerEmpleados(){
 
 function empleados(data){
     if(data.exito){
-        var tabla = "<table class=' table table-striped'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Borrar / Modificar </td> </tr> </thead>";
+        var tabla = "<table class=' table table-striped' id='empleadosTable'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Borrar / Modificar </td> </tr> </thead>";
         tabla += "<tbody>";
         for (var element in data.empleados) {
             var empleado = data.empleados[element];
@@ -53,7 +65,11 @@ function empleados(data){
             tabla += "<button type='button' class='btn btn-success' onclick='actualizarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Actualizar</button>  </td>";
         }
         tabla+= "</tbody> </table>";
+
         $("#info").html(tabla);
+        $("#info").ready(function(){
+            $("#empleadosTable").DataTable();    
+        });
 
     }
     else{
@@ -62,10 +78,11 @@ function empleados(data){
 }
 function borrarEmpleado(idEmpleado){
     $.ajax({
-        url: 'empleados',
+        url: 'empleados/borrar/' + idEmpleado,
         type:"DELETE",
         dataType: 'json',
-        data : {id: idEmpleado }
+        headers: { token : localStorage.getItem('token')},
+        
     }).then(borrado, error)
 
 }
@@ -84,6 +101,15 @@ function borrado(data){
 function modificarEmpleado(empleado){
     $("#idEmpleado").val(empleado.id);
     $("#usuarioNuevo").val(empleado.usuario);
+    $("#nombreNuevo").val(empleado.nombre);
+    $("#apellidoNuevo").val(empleado.apellido);
+    $("#clave").val(empleado._pass);
+    if(empleado.admin){
+        $( "#adminNuevo" ).prop( "checked", true );
+    }
+    else{
+        $( "#adminNuevo" ).prop( "checked", false );
+    }
 
     
     $("#register").attr('id','modificar');
@@ -91,14 +117,30 @@ function modificarEmpleado(empleado){
     $("#idEmpleado").removeClass("hidden");
     $('#agregarEmpleado').modal('show');
     $("#modificar").click(function(){
-        var modificado = $("#usuarioNuevo").val();
+        var nombreModificado = $("#nombreNuevo").val();
+        var apellidoModificado = $("#apellidoNuevo").val();
+        var usuarioModificado = $("#usuarioNuevo").val();
         var passModificado = $("#clave").val();
-        
+        if($('#adminNuevo').is(':checked')){
+            var adminModificado = true;
+        }
+        else{
+            var adminModificado = false;
+        }
         $.ajax({
-            url:'empleados',
-            type:'PUT',
+            url:'empleados/modificar',
+            type:'POST',
             dataType:'json',
-            data: {id: empleado.id, usuario: modificado, pass :passModificado }
+            headers: { token : localStorage.getItem('token')},
+            data: {
+                id: empleado.id, 
+                usuario: usuarioModificado,
+                nombre: nombreModificado,
+                apellido: apellidoModificado,
+                activo: true,
+                admin: adminModificado,
+                pass :passModificado,
+            }
         }).then(modificado, error);
         
     })
@@ -119,8 +161,32 @@ function logueosEmpleados(){
     }).then(tablaLogueos, error);
 }
 
-function tablaLogueos(data){
-    console.log(data);
+function tablaLogueos(data, status, xhr){
+    
+    if(xhr.status == 200){
+        var tabla = "<table class=' table table-striped' id='logueosTable'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Entrada </td> <td> salida </td> </tr> </thead>";
+            tabla += "<tbody>";
+            for (var element in data) {
+                var empleado = data[element];
+                if(empleado.activo){
+                    empleado.activo = "Activo";
+                }
+                else{
+                    empleado.activo = "Suspendido";
+                }
+                tabla += "<tr> <td>" + empleado.id + "</td> <td>" + empleado.usuario + "</td> <td>" + empleado.activo + "</td> <td>" + empleado.entrada + "</td> <td>" + empleado.salida + "</td>";
+
+            }
+            tabla+= "</tbody> </table>";
+
+            $("#info").html(tabla);
+            $("#info").ready(function(){
+                $("#logueosTable").DataTable();    
+            });
+            
+    }
+    
+
 }
 
 
@@ -128,10 +194,11 @@ function tablaLogueos(data){
 function actualizarEmpleado(idEmpleado){
     
     $.ajax({
-        url:'empleados',
+        url:'empleados/actualizar/'+ idEmpleado,
+        headers: { token : localStorage.getItem('token')},
         type:"PATCH",
         dataType: 'json',
-        data: { id: idEmpleado}
+        
     }).then(actualizado,error);
 }
 function actualizado(data){
@@ -153,5 +220,8 @@ function modalEmpleado(){
         $("#idEmpleado").addClass("hidden");
         $("#usuarioNuevo").val("");
         $("#clave").val("");
+        $("#nombreNuevo").val("");
+        $("#apellidoNuevo").val("");
+
     })
 }
