@@ -4,7 +4,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 require './clases/vendor/autoload.php';
 require_once './clases/empleadoApi.php';
-require_once './clases/estacionamiento.php';
+require_once './clases/estacionamientoApi.php';
 require_once './clases/verificar.php';
 $app = new \Slim\App;
 
@@ -96,7 +96,8 @@ $app->group('/empleados', function(){
 
 
 $app->group('/estacionamiento', function (){
-    //$this->get('/lugares',\)
+    $this->get('/lugares',\estacionamientoApi::class . ':lugares');
+    $this->post('/estacionar', \estacionamientoApi::class . ':alta');
 })->add(\verificar::class . ':token');
 
 

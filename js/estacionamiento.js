@@ -108,14 +108,15 @@ function estacionado(data){
 
 function estacionamiento(){
     $.ajax({
-        url:'estacionamiento',
+        url:'estacionamiento/lugares',
+        headers: { token : localStorage.getItem('token')},
         type:'GET',
         dataType:'json',
     }).then(estacionamientOk,error)
 }
 
-function estacionamientOk(data){
-    if(data.exito){
+function estacionamientOk(data, status, xhr){
+    if(xhr.status == 200){
         var tabla =tablaLugares(data.lugares);
         $("#info").html(tabla);
         var precio = "<h3 class='text-success text-center'> Precios </h3>";

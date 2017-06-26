@@ -12,20 +12,11 @@ $(document).ready( function (){
 });
 
 
-
-/*
-window.onbeforeunload = function(e){
-        $.ajax({
-        url:"desloguear",
-        type:"POST",
-    }).then(refresh, error)
-}
-*/
 function cargarSelect(id, elementos) {
     $.each(elementos, function (value) {   
         $(id)
             .append($("<option></option>")
-                .attr("value", value)
-                .text(value)); 
+                .attr("value", elementos[value])
+                .text(elementos[value])); 
     });
 }
