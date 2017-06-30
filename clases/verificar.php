@@ -107,6 +107,55 @@
             //AÑADIR ELSE PARA PATCH
         }
 
+        public static function datosEstacionar($request, $response, $next){
+            $datos = $request->getAttribute('datos');
+            $id = $datos->id;
+            if($request->isPost()){
+
+            }
+        }
+
+        public static function datosAuto($request, $response, $next){
+            $data = $request->getParsedBody();
+            $colores = ['verde', 'rojo', 'azul', 'blanco', 'negro'];
+            $marcas = ['peugeot', 'renault', 'ford'];
+            $color = strtolower(filter_var($data['color'], FILTER_SANITIZE_STRING));
+            $marca = strtolower(filter_var($data['marca'], FILTER_SANITIZE_STRING));
+            $patente = $this->patenteVieja($data['patente']);
+            
+            if($patente){
+                $request->withAttribute('patente', $patente);
+            }
+            else{
+                $patente = $this->patenteNueva($data['patente']);
+                if($patente){
+                    $request->withAttribute('patente', $patente);
+                }
+                else{
+                    return $response->withJson("Patente incorrecta", 400);
+                }
+            }
+            if(in_array($color, $colores)){
+                
+            }
+        }
+        /**
+         * verifica que la patente pasada sea una patente vieja valida
+         *
+         * @param [type] $patente string a ser verificado
+         * @return devuelve la patente "curada" si es correcta o false si no es valida.
+         */
+        private  function patenteVieja($patente){
+            $patente = trim(str_replace("-", "", strtoupper($patente)));
+            
+            if(preg_match("/^[A-Z]{3}[0-9]{3}$/",$patente)){
+                return $patente;
+            }
+            else{
+                return false;
+            }
+        }
+
     }
     
 ?>

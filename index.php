@@ -98,6 +98,7 @@ $app->group('/empleados', function(){
 $app->group('/estacionamiento', function (){
     $this->get('/lugares',\estacionamientoApi::class . ':lugares');
     $this->post('/estacionar', \estacionamientoApi::class . ':alta');
+    $this->post('/sacar', \estacionamientoApi::class . ':baja');
 })->add(\verificar::class . ':token');
 
 

@@ -50,6 +50,7 @@
             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
             return $consulta->execute();
         }
+        
     }
     
 ?>
