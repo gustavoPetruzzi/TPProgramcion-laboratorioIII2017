@@ -107,38 +107,91 @@
             //AÑADIR ELSE PARA PATCH
         }
 
+
+
         public static function datosEstacionar($request, $response, $next){
-            $datos = $request->getAttribute('datos');
-            $id = $datos->id;
-            if($request->isPost()){
-
-            }
-        }
-
-        public static function datosAuto($request, $response, $next){
             $data = $request->getParsedBody();
             $colores = ['verde', 'rojo', 'azul', 'blanco', 'negro'];
             $marcas = ['peugeot', 'renault', 'ford'];
-            $color = strtolower(filter_var($data['color'], FILTER_SANITIZE_STRING));
-            $marca = strtolower(filter_var($data['marca'], FILTER_SANITIZE_STRING));
-            $patente = $this->patenteVieja($data['patente']);
-            
-            if($patente){
-                $request->withAttribute('patente', $patente);
-            }
-            else{
-                $patente = $this->patenteNueva($data['patente']);
-                if($patente){
-                    $request->withAttribute('patente', $patente);
+
+            if($request->isPost()){
+                if(isset($data['lugar'])){
+                    $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
+                    if($lugar){
+                        $request = $request->withAttribute('lugar', $lugar);
+                    }
+                    else{
+                        return $response->withAttribute('lugar invalido', 400);
+                    }
                 }
                 else{
-                    return $response->withJson("Patente incorrecta", 400);
+                    $request = $request->withAttribute('lugar', NULL);
                 }
+
+
+                $color = strtolower(filter_var($data['color'], FILTER_SANITIZE_STRING));
+                $marca = strtolower(filter_var($data['marca'], FILTER_SANITIZE_STRING));
+                $patente = $this->patenteVieja($data['patente']);
+
+                if($patente){
+                    $request = $request->withAttribute('patente', $patente);
+                }
+                else{
+                    $patente = $this->patenteNueva($data['patente']);
+                    if($patente){
+                        $request = $request->withAttribute('patente', $patente);
+                    }
+                    else{
+                        return $response->withJson("Patente incorrecta", 400);
+                    }
+                }
+                if(in_array($color, $colores)){
+                    $request = $request->withAttribute('color', $color);
+                }
+                else{
+                    return $response->withJson("Color incorrecto", 400);
+                }
+
+                if(in_array($marca, $marcas)){
+                    $request = $request->withAttribute('marca', $marca);
+                }
+                else{
+                    return $response->withJson("Marca incorrecta", 400);
+                }
+
+                return $next($request, $response);
             }
-            if(in_array($color, $colores)){
-                
+            elseif ($request->isDelete()) {
+                if(isset($data['lugar'])){
+                    $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
+                    if($lugar){
+                        $request = $request->withAttribute('lugar', $lugar);
+                    }
+                    else{
+                        return $response->withJson('lugar invalido', 400);
+                    }
+                }
+                elseif(isset($data['patente'])){
+                    $patente = $this->patenteVieja($data['patente']);
+                    if($patente){
+                        $request = $request->withAttribute('patente', $patente);
+                    }
+                    else{
+                        $patente = $this->patenteNueva($data['patente']);
+                        if($patente){
+                            $request = $request->withAttribute('patente', $patente);
+                        }
+                        else{
+                            return $response->withJson('Patente incorrecta', 400);
+                        }
+                    }
+                }
+                return $next($request, $response);
             }
         }
+
+
+
         /**
          * verifica que la patente pasada sea una patente vieja valida
          *
@@ -154,6 +207,10 @@
             else{
                 return false;
             }
+        }
+
+        private function patenteNueva($patente){
+            return true;
         }
 
     }

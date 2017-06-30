@@ -64,7 +64,7 @@
 
         }
         // MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
-        public function estacionar($auto,$id, $lugar = null){
+        public  function estacionar($auto,$id, $lugar = null){
             
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
 
@@ -73,13 +73,7 @@
             $consulta->bindValue(":idempleado", $id, PDO::PARAM_INT);
             $consulta->bindValue(":lugar", $lugar, PDO::PARAM_INT);
             $consulta->bindValue(":patente", $auto->patente,PDO::PARAM_STR);
-            if($consulta->execute()){
-                return $auto;
-            }
-            else{
-                return false;
-            }
-
+            return $consulta->execute();
 
         }
         public function sacar($data){
@@ -89,7 +83,7 @@
                 $patente = $lugar['patente'];
             }
             else{
-                var_dump($data);
+                
                 $patente = filter_var($data['patente'], FILTER_SANITIZE_STR);
             }
             $retorno['exito'] = false;
