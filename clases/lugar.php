@@ -55,6 +55,14 @@
 
             return $lugares;
         }
+        public static function buscar($numero){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM lugares WHERE numero = :numero");
+            $consulta->bindValue(":numero", $numero, PDO::PARAM_INT);
+            $consulta->setFetchMode(PDO::FETCH_CLASS, 'lugar');
+            $consulta->execute();
+            return $consulta->fetch();
+        }
 
 
         public static function reservar($numero) {

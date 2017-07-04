@@ -17,6 +17,7 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
-    "datatables.net": "^1.10.15"
+    "datatables.net": "^1.10.15",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47"
   }
 }

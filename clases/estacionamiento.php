@@ -63,7 +63,7 @@
             return $consulta->fetch();
 
         }
-        // MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
+        // TODO MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
         public  function estacionar($auto,$id, $lugar = null){
             
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
@@ -78,14 +78,15 @@
         }
         public function sacar($data){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            if(isset($data['lugar'])){
-                $lugar = $this->buscar(filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT));
+            if(isset($data['lugar'])){                
+                $lugar = $this->buscar($data['lugar']);
                 $patente = $lugar['patente'];
             }
             else{
                 
-                $patente = filter_var($data['patente'], FILTER_SANITIZE_STR);
+                $patente = $data['patente'];
             }
+            
             $retorno['exito'] = false;
             $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET salida = NOW() WHERE patente= :patente AND salida = '0000-00-00 00:00:00'");
             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
@@ -104,29 +105,88 @@
             }
             return $retorno;
         }
-        // VER QUE PASA SI ENTRA Y SALE ANTES DE LA HORA. 
+
+        public static function registrosAutos($patente, $desde, $hasta = NULL){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $desde = $desde."%";
+            if(!isset($hasta)){
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT lugar as cochera, entrada, salida, precio FROM operaciones WHERE patente = :patente AND entrada LIKE :desde");
+            }
+            else{
+                $hasta = $hasta."%";
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT lugar as cochera, entrada, salida, precio FROM operaciones WHERE patente = :patente AND entrada BETWEEN :desde AND :hasta");
+                $consulta->bindValue(':hasta', $hasta, PDO::PARAM_STR);
+            }
+
+            $consulta->bindValue(':desde', $desde, PDO::PARAM_STR);
+            $consulta->bindValue(':patente', $patente, PDO::PARAM_STR);
+            $consulta->execute();
+            return $consulta->fetchAll();
+        }
+
+        public static function registrosCocheras($orden, $desde, $hasta = NULL){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $desde = $desde."%";
+            if($orden){
+                if(!isset($hasta)){
+                    $consulta = $objetoAccesoDatos->retornarConsulta("SELECT lugar as cochera, COUNT(*) AS cantidad FROM operaciones WHERE entrada LIKE :desde GROUP BY cochera ORDER BY cantidad DESC");
+                }
+                else{
+                    $hasta = $hasta."%";
+                    $consulta = $objetoAccesoDatos->retornarConsulta("SELECT lugar as cochera, COUNT(*) AS cantidad FROM operaciones WHERE entrada BETWEEN :desde AND :hasta GROUP BY cochera ORDER BY cantidad DESC");
+                    $consulta->bindValue(':hasta', $hasta, PDO::PARAM_STR);
+                }
+            }
+            else{
+                if(!isset($hasta)){
+                    $consulta = $objetoAccesoDatos->retornarConsulta("SELECT lugar as cochera, COUNT(*) AS cantidad FROM operaciones WHERE entrada LIKE :desde GROUP BY cochera ORDER BY cantidad ASC");
+                }
+                else{
+                    $hasta = $hasta."%";
+                    $consulta = $objetoAccesoDatos->retornarConsulta("SELECT lugar as cochera, COUNT(*) AS cantidad FROM operaciones WHERE entrada BETWEEN :desde AND :hasta GROUP BY cochera ORDER BY cantidad ASC");
+                    $consulta->bindValue(':hasta', $hasta, PDO::PARAM_STR);
+                }
+            }
+
+            $consulta->bindValue(':desde', $desde,  PDO::PARAM_STR);
+            $consulta->execute();
+            return $consulta->fetchAll();
+        }
+
         public function calcularPrecio($patente) {
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->RetornarConsulta("SELECT HOUR(TIMEDIFF(salida, entrada)) as `diferencia` FROM operaciones WHERE precio = 0 AND patente = :patente");
+            $consulta = $objetoAccesoDatos->RetornarConsulta("SELECT TIMESTAMPDIFF(MINUTE, entrada,salida) as diferencia FROM operaciones WHERE precio = 0 AND patente = :patente");
             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
             if($consulta->execute()){
                 $numero = $consulta->fetch();    
-            }
+                $tiempo = $numero['diferencia'];
 
-            if($numero['diferencia'] > 24){
-                return $this->precioEstadia;
-            }
-            elseif($numero['diferencia'] > 12){
+                $total = 0;
 
-                return $this->precioMedia;
-            }
-            elseif($numero['diferencia'] == 0){
-                return $this->precioHora;
-            }
-            else{
-                return ($numero['diferencia'] * $this->precioHora);
-            }
+                $estadia =  $this->precioEstadia * floor($tiempo /(60*24));
+                $total += $estadia;
+                $tiempoRestante = $tiempo % (60*24);
 
+                $media = $this->precioMedia * floor($tiempoRestante / (60*12));
+                $tiempoRestante = $tiempoRestante % (60*12);
+                $total += $media;
+
+                $hora = $this->precioHora * floor($tiempoRestante / 60);
+                $tiempoRestante = $tiempoRestante % 60;
+                $total += $hora;
+                if($total == 0){
+                    $total = 10;
+                }
+                else{
+                    $fraccion = round(($this->precioHora / 6)) * floor($tiempoRestante / 10);
+                    $tiempoRestante = $tiempoRestante % 10;
+                    $total += $fraccion;
+                }
+                
+                
+                
+                return $total;
+            }
         }
         public function buscar($lugar){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();

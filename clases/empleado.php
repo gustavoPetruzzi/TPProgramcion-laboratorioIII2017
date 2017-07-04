@@ -150,15 +150,19 @@
 
         public function operaciones($desde, $hasta= NULL){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $desde = $desde."%";
             if(!isset($hasta)){
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE dia = :fecha AND idempleado = :id");
-                $consulta->bindValue(":fecha", $fecha, PDO::PARAM_STR);
-                $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
-                $consulta->execute();    
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE entrada LIKE :desde AND idempleado = :id");
             }
-            else{
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE");
+            else{   
+                $hasta = $hasta."%";
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE idempleado = :id AND  entrada  BETWEEN :desde AND  :hasta");
+                $consulta->bindValue(':hasta', $hasta, PDO::PARAM_STR);
             }
+
+            $consulta->bindValue(":desde", $desde, PDO::PARAM_STR);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $consulta->execute();    
             return $consulta->fetchAll();
         }
     }

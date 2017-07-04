@@ -1,5 +1,5 @@
-function logueado(data){
-    if(data.exito){
+function logueado(data,status, xhr){
+    if(xhr.status = 200){
         localStorage.setItem('token', data.token);
         var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.usuario + ' </h4>';
         htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>';
@@ -9,8 +9,9 @@ function logueado(data){
         $("#log").attr('id','logout');
         if(data.usuario == 'admin'){
             $("#empleados").removeClass("hidden");
+            $("#cocheras").removeClass("hidden");
         }
-        $("#autos").removeClass("hidden");
+        $("#estacionamiento").removeClass("hidden");
         $("#operaciones").removeClass("hidden");
         desloguear();
     }
@@ -33,11 +34,13 @@ function deslogueado(data){
         $("#logout").html(htmlDeslogueado);
         $("#logout").attr('id', 'log');
         $("#empleados").addClass('hidden');
-        $("#autos").addClass("hidden");
+        $("#estacionamiento").addClass("hidden");
         $("#operaciones").addClass("hidden");
+        $("#cocheras").addClass("hidden");
         $("#info").html("");
         $("#precios").html("");
         $("#respuesta").html("");
+        $("#opciones").html("");
         loguear();
     }
     else{

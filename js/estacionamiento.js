@@ -7,11 +7,11 @@ function tablaLugares(lugares){
             var button = "";
             if(lugar.patente == null){
                 lugar.patente = "";
-                tabla += "<tr class='success'>";
+                tabla += "<tr class=''>";
                 button = buttonEstacionar(lugar.numero,true);
             }
             else{
-                tabla += "<tr class='danger'>";
+                tabla += "<tr class=''>";
                 button = buttonEstacionar(lugar.numero);
             }
             if(lugar.reservado){
@@ -50,23 +50,16 @@ function modalEstacionar(numero){
 
 }
 function sacar(informacion){
-    var datos ="";
-    if(isNaN(informacion)){
-        datos = {'patente': informacion}
-    }
-    else{
-        datos = {'lugar': informacion }
-    }
+    
     $.ajax({
-        url:'estacionamiento',
+        url:'estacionamiento/sacar/'+ informacion,
+        headers: { token : localStorage.getItem('token')},
         type:'DELETE',
-        dataType: 'json',
-        processData: false,
-        data: datos
+        dataType: 'json',        
     }).then(sacado, error)   
 }
-function sacado(data){
-    if(data.exito){
+function sacado(data, status, xhr){
+    if(xhr.status == 200){
         estacionamiento();
         var sacado  = "<h3 class='text-success text-center'> Salida </h3>"
         sacado += "<p> <b> Patente </b> " + data.auto[0].patente + "</p>";
@@ -83,7 +76,8 @@ function eventEstacionar(){
         var colorAuto = $("#color").val();
         var marcaAuto = $("#marca").val();
         $.ajax({
-            url:'estacionamiento',
+            url:'estacionamiento/estacionar',
+            headers: { token : localStorage.getItem('token')},
             type:'POST',
             dataType: 'json',
             data: {lugar: lugarAuto, patente: patenteAuto, color: colorAuto, marca: marcaAuto}
@@ -97,7 +91,7 @@ function modalSalida(){
 
 function salidaAuto(){
     $("#salida").click(function(){
-        var patente = ("#patenteSalida").val();
+        var patente = $("#patenteSalida").val();
         sacar(patente);
     })
 }

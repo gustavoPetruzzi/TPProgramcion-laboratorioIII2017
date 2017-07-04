@@ -12,7 +12,7 @@
         public static function datosUsuarios($request, $response, $next){
             if($request->isPost()){
                 $data = $request->getParsedBody();
-                if( isset($data['usuario']) && isset($data['pass'])){
+                if( isset($data['usuario']) && !empty($data['usuario']) && isset($data['pass']) && !empty($data['pass']) ){
                     $usuario = filter_var($data['usuario'], FILTER_SANITIZE_STRING);
                     $pass = filter_var($data['pass'], FILTER_SANITIZE_STRING);    
                     if($usuario && $pass){
@@ -60,6 +60,7 @@
         }
 
         public static function datosNuevo($request, $response, $next){
+            $data = $request->getParsedBody();
             if(isset($data['id'])){
                 $id = filter_var($data['id'], FILTER_SANITIZE_NUMBER_INT);
                 if($id){
@@ -70,8 +71,10 @@
                 }
                 
             }
+            else{
+                $request = $request->withAttribute('id', NULL);
+            }
             if($request->isPost()){
-                $data = $request->getParsedBody();
 
                 
                 if(isset($data['nombre']) && isset($data['apellido']) && isset($data['usuario']) && isset($data['pass']) && isset($data['activo']) && isset($data['admin'])){
@@ -107,6 +110,31 @@
             //AÑADIR ELSE PARA PATCH
         }
 
+        public static function fechas($request, $response, $next){
+            $data = $request->getParsedBody();
+            $desde = date("Y-m-d", $data['desde']);
+            if($desde){
+                $request = $request->withAttribute('desde', $desde);
+            }
+            else{
+                return $response->withJson('Fecha mal pasada');
+            }
+
+            if(isset($data['hasta'])){
+                $hasta = date("Y-m-d", $data['hasta']);
+                if($hasta){
+                    $request = $request->withAttribute('hasta', $hasta);
+                }
+                else{
+                    return $response->withJson('Fecha mal pasada');
+                }
+            }
+            else{
+                $request = $request->withAttribute('hasta', NULL);
+            }
+
+            return $next($request, $response);
+        }
 
 
         public static function datosEstacionar($request, $response, $next){
@@ -131,7 +159,7 @@
 
                 $color = strtolower(filter_var($data['color'], FILTER_SANITIZE_STRING));
                 $marca = strtolower(filter_var($data['marca'], FILTER_SANITIZE_STRING));
-                $patente = $this->patenteVieja($data['patente']);
+                $patente = verificar::patenteVieja($data['patente']);
 
                 if($patente){
                     $request = $request->withAttribute('patente', $patente);
@@ -162,16 +190,21 @@
                 return $next($request, $response);
             }
             elseif ($request->isDelete()) {
-                if(isset($data['lugar'])){
-                    $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
-                    if($lugar){
-                        $request = $request->withAttribute('lugar', $lugar);
-                    }
-                    else{
-                        return $response->withJson('lugar invalido', 400);
-                    }
+                $dato = $request->getAttribute('route')->getArguments('datos');
+                $patente = verificar::patenteVieja($dato['datos']);
+                if($patente){
+                    $request = $request->withAttribute('patente', $patente);
                 }
-                elseif(isset($data['patente'])){
+                elseif($id= filter_var($dato['datos'], FILTER_SANITIZE_NUMBER_INT)){
+                    $request = $request->withAttribute('lugar', $id);
+                }
+                else{
+                    return $response->withJson('No se han enviado datos',400);
+                }
+                return $next($request, $response);
+            }
+            elseif($request->isGet()){
+                if(isset($data['patente'])){
                     $patente = $this->patenteVieja($data['patente']);
                     if($patente){
                         $request = $request->withAttribute('patente', $patente);
@@ -182,12 +215,12 @@
                             $request = $request->withAttribute('patente', $patente);
                         }
                         else{
-                            return $response->withJson('Patente incorrecta', 400);
+                            return $response->withJson('patente invalidad',400);
                         }
                     }
                 }
-                return $next($request, $response);
             }
+            return $next($request, $response);
         }
 
 
@@ -198,7 +231,7 @@
          * @param [type] $patente string a ser verificado
          * @return devuelve la patente "curada" si es correcta o false si no es valida.
          */
-        private  function patenteVieja($patente){
+        public  static function patenteVieja($patente){
             $patente = trim(str_replace("-", "", strtoupper($patente)));
             
             if(preg_match("/^[A-Z]{3}[0-9]{3}$/",$patente)){
@@ -209,7 +242,7 @@
             }
         }
 
-        private function patenteNueva($patente){
+        public static function patenteNueva($patente){
             return true;
         }
 

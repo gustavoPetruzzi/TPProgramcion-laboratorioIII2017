@@ -22,57 +22,6 @@ $app->add(function($request, $response, $next){
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
-$app->get('/estacionamiento', function (Request $request, Response $response) {
-    session_start();
-    $retorno['exito'] = false;
-    if(isset($_SESSION['empleado'])) {
-        $estacionamiento = estacionamiento::traerEstacionamiento();
-        $retorno['lugares'] = $estacionamiento->traerLugares();
-        $retorno['precios'] = $estacionamiento;
-        $retorno['exito'] = true;
-    }
-    
-    return $response->withJson($retorno);
-});
-$app->post('/estacionamiento', function (Request $request, Response $response) {
-    session_start();
-    $retorno['exito'] = false;
-    if(isset($_SESSION['empleado'])){
-        $estacionamiento = estacionamiento::traerEstacionamiento();
-        $data = $request->getParsedBody();
-        $patente = filter_var($data['patente'], FILTER_SANITIZE_STRING);
-        $color = filter_var($data['color'], FILTER_SANITIZE_STRING);
-        $marca = filter_var($data['marca'], FILTER_SANITIZE_STRING);
-        $lugar = filter_var($data['lugar'], FILTER_SANITIZE_NUMBER_INT);
-        $auto = new auto($patente, $color, $marca);
-
-        $auto->agregar();
-        $retorno['entrada'] = $estacionamiento->estacionar($auto, $_SESSION['empleado']->id, $lugar);
-        if(isset($retorno['entrada'])){
-            $retorno['auto'] = $auto;
-            $retorno['exito'] = true;
-        }
-    }
-    return $response->withJson($retorno);
-});
-
-
-$app->delete('/estacionamiento', function (Request $request, Response $response) {
-    session_start();
-    $retorno['exito'] = false;
-    if(isset($_SESSION['empleado'])) {
-        $estacionamiento = estacionamiento::traerEstacionamiento();
-        $data = $request->getParsedBody();
-        
-        $retorno = $estacionamiento->sacar($data);
-    }
-    
-    return $response->withJson($retorno);
-});
-
-
-
-
                         //LOGIN
 $app->group('/log', function(){
 
@@ -88,18 +37,28 @@ $app->group('/empleados', function(){
     $this->post('/alta', \empleadoApi::class . ':alta');
     $this->post('/modificar', \empleadoApi::class . ':modificar');
     $this->delete('/borrar/{id}', \empleadoApi::class . ':borrar');
+    $this->patch('/actualizar/{id}', \empleadoApi::class . ':actualizar');
 
     $this->get('/logueos/{id}',\empleadoApi::class . ':registrosLogueos');
     $this->get('/logueos',\empleadoApi::class . ':registrosLogueos');
-    $this->patch('/actualizar/{id}', \empleadoApi::class . ':actualizar');
+    $this->get('/operaciones/{id}/{desde}[/{hasta}]',\empleadoApi::class . ':registrosOperaciones')->add(\verificar::class . ':fechas');
 })->add(\verificar::class . ':datosNuevo')->add(\verificar::class . ':admin')->add(\verificar::class . ':token');
 
-
+                                    //ESTACIONAMIENTO
 $app->group('/estacionamiento', function (){
     $this->get('/lugares',\estacionamientoApi::class . ':lugares');
-    $this->post('/estacionar', \estacionamientoApi::class . ':alta');
-    $this->delete('/sacar', \estacionamientoApi::class . ':baja');
-})->add(\verificar::class . ':datosAuto')->add(\verificar::class . ':token');
+    $this->post('/estacionar', \estacionamientoApi::class . ':alta');   
+    $this->delete('/sacar/{datos}', \estacionamientoApi::class . ':baja');
+    $this->get('/buscar/{patente}/{desde}[/{hasta}]', estacionamientoApi::class . ':buscarAuto')->add(\verificar::class . ':fechas');
+})->add(\verificar::class . ':datosEstacionar')->add(\verificar::class . ':token');
+
+                                   //COCHERAS
+//CHEQUEAR SI ES ADMIN
+$app->group('/cocheras', function(){
+    $this->get('/mas/{desde}[/{hasta}]', \estacionamientoApi::class . ':mas');
+    $this->get('/menos/{desde}[/{hasta}]', \estacionamientoApi::class . ':menos');
+    $this->get('/nunca/{desde}[/{hasta}]', \estacionamientoApi::class . ':nunca');
+})->add(\verificar::class . ':fechas')->add(\verificar::class . ':token');
 
 
 

@@ -4,15 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/index.css">
-    <script src="bower_components/jquery/dist/jquery.js"> </script>
+    <script src="bower_components/jquery/dist/jquery.min.js"> </script>
+    <script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
     <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"> </script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"> </script>
+    <script type="text/javascript" src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
     <script src="js/estacionamiento.js"> </script>
     <script src="js/empleado.js"> </script>
     <script src="js/login.js"> </script>
     <script src="js/index.js"> </script>
+    <script src="js/cocheras.js"> </script>
     <title>Estacionamiento</title>
 </head>
 <body>
@@ -119,20 +123,20 @@
                 <li class="dropdown">
                     <a id="empleados" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Empleados</a>
                     <ul class="dropdown-menu">
-                        <li><a href="" class=""  onclick="traerEmpleados(); return false;">Empleados</a></li>
+                        <li><a href="" class=""  onclick="traerEmpleados(tablaEmpleados); return false;">Empleados</a></li>
                         <li><a href="" class="" onclick="registrarEmpleado(); return false;">Agregar</a></li>
                         <li><a href="" class="" onclick="logueosEmpleados(); return false;">Logueos</a></li>
-                        <li><a href="" class="" onclick="logueosEmpleados(); return false;">Operaciones</a></li>
+                        <li><a href="" class="" onclick="operaciones(); return false;">operaciones</a></li>
+                        
                         
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a id="autos" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Estacionamiento</a>
+                    <a id="estacionamiento" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Estacionamiento</a>
                     <ul class="dropdown-menu">
                         <li><a href="" class=""  onclick="estacionamiento(); return false;">Lugares</a></li>
                         <li><a href="" class="" onclick="modalEstacionar(); return false;">Estacionar</a></li>
-                        <li><a href="" class="" onclick="modalSalida(); return false;">Salida</a></li>
-                        
+                        <li><a href="" class="" onclick="modalSalida(); return false;">Salida</a></li>                        
                     </ul>
                 </li>
 
@@ -143,6 +147,16 @@
                         
                     </ul>
                 </li>
+                
+                <li class="dropdown">
+                    <a id="cocheras" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Cocheras</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="" class="" onclick="masUsada(); return false;">Mas usada</a></li>
+                        <li><a href="" class="" onclick="menosUsada(); return false;">Menos usada</a></li>
+                        <li><a href="" class="" onclick="nunca(); return false;">Nunca Usada</a></li>
+                    </ul>
+                </li>
+
             </ul>
 
             <form id="log" class="navbar-form navbar-right">
@@ -163,11 +177,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-9" id="info"></div>
-                
                 <div class="col-sm-3" id="estado" >
                     <div id="precios"> </div>
                     <div id="respuesta"> </div>
                 </div>
+
             </div>
         </div>
     </body>

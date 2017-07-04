@@ -36,7 +36,7 @@ function registrarEmpleado(){
 
 
 
-function traerEmpleados(){
+function traerEmpleados(empleados){
     
     $.ajax({
         url:'empleados/lista',
@@ -47,7 +47,7 @@ function traerEmpleados(){
     }).then(empleados, error)
 }
 
-function empleados(data){
+function tablaEmpleados(data){
     if(data.exito){
         var tabla = "<table class=' table table-striped' id='empleadosTable'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Borrar / Modificar </td> </tr> </thead>";
         tabla += "<tbody>";
@@ -63,6 +63,7 @@ function empleados(data){
             tabla += "<td> <button type='button' class='btn btn-warning' onclick='modificarEmpleado(" + JSON.stringify(empleado) + ")'><span class='glyphicons glyphicons-random'></span> Modificar</button>";
             tabla += "<button type='button' class='btn btn-danger' onclick='borrarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Borrar</button>  ";
             tabla += "<button type='button' class='btn btn-success' onclick='actualizarEmpleado(" + empleado.id + ")'><span class='glyphicons glyphicons-bin'></span> Actualizar</button>  </td>";
+            
         }
         tabla+= "</tbody> </table>";
 
@@ -146,10 +147,10 @@ function modificarEmpleado(empleado){
     })
 }
 
-function modificado(data){
-    console.info(data);
-    if(data.exito){
-        alert("modificado");
+function modificado(data, status, xhr){
+    if(xhr.status == 200){
+        alert("Modificado");
+        traerEmpleados();
     }
 }
 
@@ -189,7 +190,9 @@ function tablaLogueos(data, status, xhr){
 
 }
 
-
+var timePicker = $(function () {
+    $('#datetimepicker1').datetimepicker();
+});
 
 function actualizarEmpleado(idEmpleado){
     
@@ -224,4 +227,94 @@ function modalEmpleado(){
         $("#apellidoNuevo").val("");
 
     })
+}
+
+function operaciones(){
+    traerEmpleados(operacionesDatos);
+}
+
+function operacionesDatos(data,status, xhr){
+    if(data.exito){
+        var opciones= "<div class='form-group'>";
+        opciones+= "    <label for='selectOperaciones'> id </label>";
+        opciones+= "    <select class='form-control' id='selectOperaciones'> </select> </div>";
+        opciones+= "    <label> Desde: </label>";
+        opciones+= `<div class="container">
+                        <div class="row">
+                            <div class='col-sm-6'>
+                                <div class="form-group">
+                                    <div class='input-group date' id='datetimepicker1'>
+                                        <input type='text' class="form-control" id='operacionesDesde' />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker1').datetimepicker({
+                                        format: 'YYYY-MM-DD'
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>`;
+        opciones+= "<label> Hasta: </label>";
+        opciones+= `<div class="container">
+                        <div class="row">
+                            <div class='col-sm-6'>
+                                <div class="form-group">
+                                    <div class='input-group date' id='datetimepicker2'>
+                                        <input type='text' class="form-control" id='operacionesHasta's />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker2').datetimepicker({
+                                        format: 'YYYY-MM-DD'
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>`;
+        opciones += "<button class='btn btn-primary' onclick='buscarOperaciones()'> Buscar </button>";
+        $("#info").html(opciones);
+        $("#opciones").ready(function(){
+            var empleados = data.empleados;
+            var ids = empleados.map(function(empleado){
+                return empleado.id;
+            });
+            console.log(ids);
+            cargarSelect('#selectOperaciones', ids);
+        });
+    }
+}
+
+function buscarOperaciones(){
+    var idEmpleado = $("#selectOperaciones").val();
+    var fechaDesde= "/" + $("#operacionesDesde").val();
+    var fechaHasta = $("#operacionesHasta").val();
+    console.log(fechaHasta);
+    if(fechaHasta){
+        var fechaHasta = "/" + $("#operacionesHasta").val();
+    }
+    else{
+        var fechaHasta ="";
+    }
+
+    $.ajax({
+        url:'empleados/operaciones/'+idEmpleado + fechaDesde + fechaHasta,
+        headers: { token : localStorage.getItem('token')},
+        type:"GET",
+        dataType:"json"
+    }).then(tablaOperaciones, error);
+}
+
+function tablaOperaciones(data, status, xhr){
+    alert(data);
 }

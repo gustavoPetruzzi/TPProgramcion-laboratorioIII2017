@@ -88,6 +88,7 @@ class empleadoApi extends empleado
     }
     public function modificar($request, $response, $args){
         $empleadoModificado = empleado::buscarEmpleado($request->getAttribute('id'));
+        
         if($empleadoModificado){
             $empleadoModificado->nombre = $request->getAttribute('nombre');
             $empleadoModificado->apellido = $request->getAttribute('apellido');
@@ -122,18 +123,25 @@ class empleadoApi extends empleado
         }
         return $response->withJson("id invalido", 400);
     }
-    public function registrosLogueos($request, $response, $args){
-        if(isset($args['id'])){
-            $id = filter_var($args['id'], FILTER_SANITIZE_NUMBER_INT);
-            if($id){
-                return $response->withJson(empleado::logueos($id));
-            }
-        }
-        else{
-            return $response->withJson(empleado::logueos());
-        }
-            
+    public function registrosLogueos($request, $response, $args ){
+        $id = $request->getAttribute('id');
+        return $response->withJson(empleado::logueos($id));
     }
-}
+    
 
+    public function registrosOperaciones($request, $response, $args){
+        $id = $request->getAttribute('id');
+        $empleado = empleado::buscarEmpleado($id);
+        if($empleado){
+            $desde = $request->getAttribute('desde');
+            $hasta = $request->getAttribute('hasta');
+            $operaciones = $empleado->operaciones($desde, $hasta);
+            if(empty($operaciones)){
+                return $response->withJson("Sin operaciones", 400);
+            }
+            return $response->withJson($empleado->operaciones($desde, $hasta));
+        }
+    }
+
+}
 ?>
