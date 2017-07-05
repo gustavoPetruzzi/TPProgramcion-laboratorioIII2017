@@ -36,7 +36,7 @@
                 return JWT::decode($token, self::$claveSecreta, [self::$algoritmo] )->data;    
             }
             catch(\Firebase\JWT\ExpiredException $e){
-                echo $e->getMessage();
+                return false;
             }
         }
     }

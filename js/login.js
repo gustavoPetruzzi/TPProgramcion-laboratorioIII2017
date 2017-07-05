@@ -7,7 +7,7 @@ function logueado(data,status, xhr){
         estacionamiento();
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
-        if(data.usuario == 'admin'){
+        if(data.admin == 1){
             $("#empleados").removeClass("hidden");
             $("#cocheras").removeClass("hidden");
         }
@@ -40,6 +40,7 @@ function deslogueado(data){
         $("#info").html("");
         $("#precios").html("");
         $("#respuesta").html("");
+        $("#usados").remove();
         $("#opciones").html("");
         loguear();
     }

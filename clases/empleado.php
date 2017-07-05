@@ -7,7 +7,7 @@
         public $nombre;
         public $apellido;
         public $usuario;
-        public  $_pass;
+        protected  $_pass;
         public $activo;
         public $admin;
 
@@ -162,6 +162,7 @@
 
             $consulta->bindValue(":desde", $desde, PDO::PARAM_STR);
             $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $consulta->setFetchMode(PDO::FETCH_ASSOC);
             $consulta->execute();    
             return $consulta->fetchAll();
         }

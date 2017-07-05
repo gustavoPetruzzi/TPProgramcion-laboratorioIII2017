@@ -14,7 +14,7 @@ function tablaLugares(lugares){
                 tabla += "<tr class=''>";
                 button = buttonEstacionar(lugar.numero);
             }
-            if(lugar.reservado){
+            if(lugar.reservado == "1"){
                 lugar.reservado = "Reservado";
             }
             else{
@@ -95,9 +95,13 @@ function salidaAuto(){
         sacar(patente);
     })
 }
-function estacionado(data){
-    alert("estacionado");
-    estacionamiento();
+function estacionado(data,status, xhr){
+    if(xhr.status == 200){
+        alert(estacionado);
+        estacionamiento();
+    }else{
+        alert(data);
+    }
 }
 
 function estacionamiento(){

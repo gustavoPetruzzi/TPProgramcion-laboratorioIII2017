@@ -135,11 +135,11 @@
                     <a id="estacionamiento" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Estacionamiento</a>
                     <ul class="dropdown-menu">
                         <li><a href="" class=""  onclick="estacionamiento(); return false;">Lugares</a></li>
-                        <li><a href="" class="" onclick="modalEstacionar(); return false;">Estacionar</a></li>
+                        <!--<li><a href="" class="" onclick="modalEstacionar(); return false;">Estacionar</a></li>-->
                         <li><a href="" class="" onclick="modalSalida(); return false;">Salida</a></li>                        
                     </ul>
                 </li>
-
+                <!---
                 <li class="dropdown">
                     <a id="operaciones" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Operar</a>
                     <ul class="dropdown-menu">
@@ -147,6 +147,7 @@
                         
                     </ul>
                 </li>
+                -->
                 
                 <li class="dropdown">
                     <a id="cocheras" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Cocheras</a>
@@ -174,14 +175,13 @@
             </div>
     </nav>
 
-        <div class="container-fluid">
+        <div class="container-fluid" id="principal" >
             <div class="row">
                 <div class="col-sm-9" id="info"></div>
                 <div class="col-sm-3" id="estado" >
                     <div id="precios"> </div>
                     <div id="respuesta"> </div>
                 </div>
-
             </div>
         </div>
     </body>

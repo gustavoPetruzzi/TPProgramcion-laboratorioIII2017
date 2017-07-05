@@ -37,7 +37,7 @@ $app->group('/empleados', function(){
     $this->post('/alta', \empleadoApi::class . ':alta');
     $this->post('/modificar', \empleadoApi::class . ':modificar');
     $this->delete('/borrar/{id}', \empleadoApi::class . ':borrar');
-    $this->patch('/actualizar/{id}', \empleadoApi::class . ':actualizar');
+    $this->patch('/actualizar/{id}', \empleadoApi::class . ':actualizarEstado');
 
     $this->get('/logueos/{id}',\empleadoApi::class . ':registrosLogueos');
     $this->get('/logueos',\empleadoApi::class . ':registrosLogueos');
@@ -58,7 +58,7 @@ $app->group('/cocheras', function(){
     $this->get('/mas/{desde}[/{hasta}]', \estacionamientoApi::class . ':mas');
     $this->get('/menos/{desde}[/{hasta}]', \estacionamientoApi::class . ':menos');
     $this->get('/nunca/{desde}[/{hasta}]', \estacionamientoApi::class . ':nunca');
-})->add(\verificar::class . ':fechas')->add(\verificar::class . ':token');
+})->add(\verificar::class . ':fechas')->add(\verificar::class . ':admin')->add(\verificar::class . ':token');
 
 
 

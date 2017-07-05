@@ -2,6 +2,7 @@
     require_once 'estacionamiento.php';
     require_once 'auto.php';
     require_once 'lugar.php';
+    require_once 'lugarCantidad.php';
     use Psr\Http\Message\ServerRequestInterface as Request;
     use Psr\Http\Message\ResponseInterface as Response;
     require_once 'vendor/autoload.php';
@@ -19,12 +20,17 @@
             $auto = new auto($request->getAttribute('patente'),$request->getAttribute('color'), $request->getAttribute('marca'));
             $datos = $request->getAttribute('datos');
             $estacionamiento = estacionamiento::traerEstacionamiento();
-            if($estacionamiento->estacionar($auto,$datos->id, $request->getAttribute('lugar'))){
+            if(!$estacionamiento->autoEstacionado($auto->patente)){
+                if($estacionamiento->estacionar($auto,$datos->id, $request->getAttribute('lugar'))){
                 $auto->agregar();
                 return $response->withJson($auto);
             }
+                else{
+                    return $response->withJson("no se ha podido ingresar", 206);
+                }    
+            }
             else{
-                return $response->withJson("no se ha podido ingresar", 400);
+                return $response->withJson("auto ya ingresado",206);
             }
         }
         public function baja($request, $response, $args){
@@ -36,7 +42,7 @@
                 return $response->withJson($retorno);
             }
             else{
-                return $response->withJson("No se pudo sacar", 400);
+                return $response->withJson("No se pudo sacar", 206);
             }
         }
 
@@ -49,43 +55,90 @@
                 $retorno['auto'] = $auto;
                 return $response->withJson($retorno);
             }
-            return $response->withJson('Auto inexistente', 400);
+            return $response->withJson('Auto inexistente', 206);
         }
 
         public function mas($request, $response, $args){
             $datos = estacionamientoApi::utilizadas($request, $response, $args, true);
             if($datos){
-                $retorno['cochera']= lugar::buscar($datos[0]['cochera']);
-                $retorno['cantidad'] =$datos[0]['cantidad'];
-                $retorno['cochera']->patente = estacionamiento::buscar($retorno['cochera']->numero);
-                return $response->withJson($retorno);    
+                $numero = $datos[0]['cochera'];
+                $maximo = $datos[0]['cantidad'];
+                $lugares = array_filter($datos,
+                function($lugar) use($maximo){
+                    return $lugar['cantidad'] == $maximo;
+                });
+                $array = array();
+                foreach ($lugares as $key ) {
+                    $lugar = new LugarCantidad($key['cochera'], $maximo);
+                    $patente = estacionamiento::buscar($lugar->numero);
+                    $lugar->patente = $patente['patente'];
+                    array_push($array, $lugar);
+                }
+                return $response->withJson($array);    
             }
-            return $response->withJson("No hay datos en esas fechas",400);
+            return $response->withJson("No hay datos en esas fechas",206);
         }
 
         public function menos($request, $response, $args){
             $datos = estacionamientoApi::utilizadas($request, $response, $args);
             if($datos){
-                $retorno['cochera']= lugar::buscar($datos[0]['cochera']);
-                $retorno['cantidad'] =$datos[0]['cantidad'];
-                $dato = estacionamiento::buscar($retorno['cochera']->numero);
-                $retorno['cochera']->patente = $dato[0]['patente'];
-                return $response->withJson($retorno);
+                $numero = $datos[0]['cochera'];
+                $minimo = $datos[0]['cantidad'];
+                $lugares = array_filter($datos,
+                function($lugar) use($minimo){
+                    return $lugar['cantidad'] == $minimo;
+                });
+                $array = array();
+                foreach ($lugares as $key ) {
+                    $lugar = new LugarCantidad($key['cochera'], $minimo);
+                    $patente = estacionamiento::buscar($lugar->numero);
+                    $lugar->patente = $patente['patente'];
+                    array_push($array, $lugar);
+                }
+                return $response->withJson($array);    
             }
-            return $response->withJson("No hay datos en esas fechas",400);
+            return $response->withJson("No hay datos en esas fechas",206);
         }
 
         public function nunca($request, $response, $args){
             $datos = estacionamientoApi::utilizadas($request, $response, $args);
             $lugares = lugar::traerLugares();
-            
+            $array = array();
             $todos = array_map(
                 function($lugar){
                     return $lugar->numero;
                 }, $lugares);
 
+            if($datos){
+                $ocupadas = array_map(
+                function($lugar){
+                    return $lugar['cochera'];
+                }, $datos);
+                //var_dump($ocupadas);
+                $desocupados = array_diff($todos, $ocupadas);
+                
+
+                foreach ($desocupados as $key ) {
+                    $lugar = new LugarCantidad($key, 0);
+                    $patente = estacionamiento::buscar($lugar->numero);
+                    $lugar->patente = $patente['patente'];
+                    array_push($array, $lugar);
+                }   
+            }
+            else{
+                foreach ($todos as $key ) {
+                    $algo = lugar::buscar($key);
+                    if($algo->reservado == 0){
+                        $algo->reservado = true;
+                    }
+                    $lugar = new LugarCantidad($algo->numero, $algo->patente, $algo->piso,$algo->reservado, "0");
+                    $patente = estacionamiento::buscar($lugar->numero);
+                    $lugar->patente = $patente['patente'];
+                    array_push($array, $lugar);
+                }   
+            }
             
-            return $response->withJson($ocupados);
+            return $response->withJson($array);
         }
         private static function utilizadas($request, $response, $args, $orden = false){
             $utilizadas = estacionamiento::registrosCocheras($orden, $request->getAttribute('desde'), $request->getAttribute('hasta'));

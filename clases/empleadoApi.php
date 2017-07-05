@@ -1,5 +1,6 @@
 <?php
 require_once 'empleado.php';
+
 require_once 'autentificadorJwt.php';
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -32,6 +33,7 @@ class empleadoApi extends empleado
                     ));
                     $retorno['usuario'] = $empleado->usuario;
                     $retorno['id'] = $empleado->id;
+                    $retorno['admin'] = $empleado->admin;
                 }
             }
             else{
@@ -132,14 +134,17 @@ class empleadoApi extends empleado
     public function registrosOperaciones($request, $response, $args){
         $id = $request->getAttribute('id');
         $empleado = empleado::buscarEmpleado($id);
+        
         if($empleado){
+            $retorno['empleado'] = $empleado;
             $desde = $request->getAttribute('desde');
             $hasta = $request->getAttribute('hasta');
-            $operaciones = $empleado->operaciones($desde, $hasta);
-            if(empty($operaciones)){
+            $retorno['operaciones'] = $empleado->operaciones($desde, $hasta);
+            $retorno['cantidad'] = count($retorno['operaciones']);
+            if(empty($retorno['operaciones'])){
                 return $response->withJson("Sin operaciones", 400);
             }
-            return $response->withJson($empleado->operaciones($desde, $hasta));
+            return $response->withJson($retorno);
         }
     }
 

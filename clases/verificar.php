@@ -53,8 +53,11 @@
             if($request->hasHeader('token')){
                 $token = $request->getHeader('token')[0];
                 $datos = autentificadorJwt::extraerData($token);
-                $request = $request->withAttribute('datos', $datos);
-                return $next($request, $response);
+                if($datos){
+                    $request = $request->withAttribute('datos', $datos);
+                    return $next($request, $response);    
+                }
+                return $response->withJson("Token vencido",400);
             }
             return $response->withJson("no se ha enviado ningun token", 400);
         }

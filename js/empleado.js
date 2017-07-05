@@ -12,7 +12,7 @@ function registrarEmpleado(){
         var nombreNuevo = $("#nombreNuevo").val();
         var apellidoNuevo = $("#apellidoNuevo").val();
         var usuarioNuevo = $("#usuarioNuevo").val();
-        var admin = false;
+        var adminNuevo = false;
         if($('#adminNuevo').is(':checked')){
             adminNuevo = true;
         }
@@ -28,7 +28,7 @@ function registrarEmpleado(){
                 apellido: apellidoNuevo,
                 pass: clave,
                 activo: true,
-                admin: admin
+                admin: adminNuevo
             }
         }).then(registrado,error);
     })
@@ -53,7 +53,7 @@ function tablaEmpleados(data){
         tabla += "<tbody>";
         for (var element in data.empleados) {
             var empleado = data.empleados[element];
-            if(empleado.activo){
+            if(empleado.activo == 1){
                 empleado.activo = "Activo";
             }
             else{
@@ -266,7 +266,7 @@ function operacionesDatos(data,status, xhr){
                             <div class='col-sm-6'>
                                 <div class="form-group">
                                     <div class='input-group date' id='datetimepicker2'>
-                                        <input type='text' class="form-control" id='operacionesHasta's />
+                                        <input type='text' class="form-control" id='operacionesHasta' />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>
@@ -301,10 +301,10 @@ function buscarOperaciones(){
     var fechaHasta = $("#operacionesHasta").val();
     console.log(fechaHasta);
     if(fechaHasta){
-        var fechaHasta = "/" + $("#operacionesHasta").val();
+         fechaHasta = "/" + $("#operacionesHasta").val();
     }
     else{
-        var fechaHasta ="";
+         fechaHasta ="";
     }
 
     $.ajax({
@@ -316,5 +316,5 @@ function buscarOperaciones(){
 }
 
 function tablaOperaciones(data, status, xhr){
-    alert(data);
+    console.log(data);
 }

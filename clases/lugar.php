@@ -12,7 +12,7 @@
 
         function __construct($numero = NULL,$patente = NULL, $piso = NULL, $reservado=false)
         {
-            if($piso != NULL && $reservado != NULL){
+            if($piso !== NULL && $reservado !== NULL){
                 $this->patente = $patente;
                 $this->numero = $numero;
                 $this->piso = $piso;

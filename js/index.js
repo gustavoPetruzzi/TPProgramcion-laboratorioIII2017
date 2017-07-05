@@ -8,8 +8,10 @@ $(document).ready( function (){
     eventEstacionar();
     salidaAuto();
     modalEstacionarOnClose();
-    
-    
+    $('a').click(function(){
+        $("#usados").remove();
+        $("#respuesta").html("");
+    })
 });
 
 
@@ -28,7 +30,7 @@ function traerDate(id){
                             <div class='col-sm-6'>
                                 <div class="form-group">
                                     <div class='input-group date' id='`+ id +`'>
-                                        <input type='text' class="form-control" id='operacionesDesde' />
+                                        <input type='text' class="form-control" id='` + id +`Input' />
                                         <span class="input-group-addon">
                                             <span class="glyphicon glyphicon-calendar"></span>
                                         </span>

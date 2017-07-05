@@ -30,30 +30,6 @@
             
             return $lugares;
         }
-        public function loguear($usuario, $pass){
-            if(!isset($_SESSION['empleado'])){
-                $empleados = empleado::TraerEmpleados();
-                //TODO--->VER VALIDACIONES
-
-                $empleadoLog = new empleado($usuario, $pass);
-                $retorno['exito'] = false;
-                foreach ($empleados as $empleadoBase ) {
-                    if($empleadoBase->usuario == $empleadoLog->usuario && $empleadoBase->getPass() == $empleadoLog->getPass()){
-                        session_start();
-                        $_SESSION['empleado'] = $empleadoBase;
-                        $retorno['exito'] = empleado::registrarLogin($empleadoBase->id);
-                        $retorno['empleado'] = $empleadoBase->usuario;
-                        break;
-                    }
-                }
-            }
-            else{
-                session_start();
-                $retorno['exito'] = true;
-                $retorno['empleado'] = $_SESSION['empleado']->usuario;
-            }
-            return $retorno;
-        }
         
         public static function traerEstacionamiento(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
@@ -63,7 +39,18 @@
             return $consulta->fetch();
 
         }
-        // TODO MODIFICAR PARA QUE ME SE PUEDA USAR SIN LUGAR
+        public function autoEstacionado($patente){
+            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
+            $consulta = $objetoAccesoDatos->RetornarConsulta("SELECT * FROM operaciones WHERE patente = :patente AND salida = '0000-00-00 00:00:00'");
+            $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
+            $consulta->execute();
+            if($consulta->rowCount() == 0){
+                return false;
+            }
+            else{
+                return true;
+            }
+        }
         public  function estacionar($auto,$id, $lugar = null){
             
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
