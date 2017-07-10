@@ -15,29 +15,19 @@
             $ahora = time();
             $payload = array(
                 'iat'=> $ahora,
-                'exp'=> $ahora +60 * 30,
+                'exp'=> $ahora +60 *60 ,
                 'data'=>$datos,
                 'app'=> 'apiRestJwt'
             );
             return JWT::encode($payload,self::$claveSecreta);
         }
         public static function verificarToken($token){
-            try{
-                $decodificado = JWT::decode($token, self::$claveSecreta, [self::$algoritmo]);
-                return true;
-            }
-            catch(Exception $e){
-                 return false;
-            }
+            $decodificado = JWT::decode($token, self::$claveSecreta, [self::$algoritmo]);
+            return true;
 
         }
         public static function extraerData($token){
-            try{
-                return JWT::decode($token, self::$claveSecreta, [self::$algoritmo] )->data;    
-            }
-            catch(\Firebase\JWT\ExpiredException $e){
-                return false;
-            }
+            return JWT::decode($token, self::$claveSecreta, [self::$algoritmo] )->data;    
         }
     }
     

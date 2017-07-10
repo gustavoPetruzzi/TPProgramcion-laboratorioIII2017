@@ -18,17 +18,22 @@
         public static function traerAutos(){
             $autos = array();
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta = $objetoAccesoDatos->retornarConsutal("SELECT * from autos");
-            $consuta->execute();
-            $autos = $consutal->fetchAll(PDO::FETCH_CLASS, "auto");
+            $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * from autos");
+            $consulta->execute();
+            $autos = $consulta->fetchAll(PDO::FETCH_CLASS, "auto");
             return $autos;
         }
         public static function buscar($patente){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM autos WHERE patente = :patente");
             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
+            $consulta->setFetchMode(PDO::FETCH_CLASS, 'auto');
             $consulta->execute();
-            $auto = $consulta->fetchAll(PDO::FETCH_CLASS, "auto");
+            
+            if($consulta->rowCount() == 0){
+                return false;
+            }
+            $auto = $consulta->fetch();
             return $auto;
         }
         public  function agregar(){
@@ -50,6 +55,7 @@
             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
             return $consulta->execute();
         }
+        
         
     }
     

@@ -21,7 +21,7 @@ function buscarMas(){
         url:'cocheras/mas' + fechaDesde + fechaHasta,
         headers: { token : localStorage.getItem('token')},
         dataType:"json"
-    }).then(tablaUsadas);
+    }).then(tablaUsadas, errores);
 }
 
 function menosUsada(){
@@ -47,7 +47,7 @@ function buscarMenos(){
         url:'cocheras/menos' + fechaDesde + fechaHasta,
         headers: { token : localStorage.getItem('token')},
         dataType:"json"
-    }).then(tablaUsadas);
+    }).then(tablaUsadas, errores);
 }
 
 function nunca(){
@@ -72,7 +72,7 @@ function buscarNunca(){
         url:'cocheras/nunca' + fechaDesde + fechaHasta,
         headers: { token : localStorage.getItem('token')},
         dataType:"json"
-    }).then(tablaUsadas);
+    }).then(tablaUsadas, errores);
 }
 
 function tablaUsadas(data,status, xhr){
@@ -111,9 +111,9 @@ function tablaUsadas(data,status, xhr){
         $("#principal").append(tabla);
     }
     else if(xhr.status == 206){
-        var error ="<div class='row' id='usados'>";
-        error += data;                    
-        error += "</div>";
+        var error =`<div class='row' id='usados'>
+                        <h3> ${data}</h3>
+                    </div>`;
         $("#principal").append(error);
 
     }

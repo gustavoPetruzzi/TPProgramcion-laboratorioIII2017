@@ -29,8 +29,18 @@
 
                 if($request->hasHeader('token')){
                     $token = $request->getHeader('token')[0];
-                    autentificadorJwt::verificarToken($token);
-                    $datos = autentificadorJwt::extraerData($token);
+                    try{
+                        autentificadorJwt::verificarToken($token);
+                    }
+                    catch(Exception $e){
+                        return $response->withJson($e->getMessage(), 511);
+                    }
+                    try{
+                        $datos = autentificadorJwt::extraerData($token);
+                    }
+                    catch(Exception $e){
+                        return $response->withJson($e->getMessage(),511);
+                    }
                     $request = $request->withAttribute('id', $datos->id);
                     return $next($request, $response);
                 }
@@ -52,12 +62,30 @@
         public function token($request, $response, $next){
             if($request->hasHeader('token')){
                 $token = $request->getHeader('token')[0];
-                $datos = autentificadorJwt::extraerData($token);
+                try{
+                    $datos = autentificadorJwt::extraerData($token);
+                }
+                catch(Exception $e){
+                    return $response->withJson($e->getMessage(), 511);
+                }
                 if($datos){
                     $request = $request->withAttribute('datos', $datos);
                     return $next($request, $response);    
                 }
                 return $response->withJson("Token vencido",400);
+            }
+            else{
+                $token = $request->getAttribute('route')->getArgument('token');
+                if($token){
+                    try{
+                        $datos = autentificadorJwt::extraerData($token);
+                    }
+                    catch(Exception $e){
+                        return $response->withJson($e->getMessage(), 511);
+                    }
+                    $request = $request->withAttribute('datos', $datos);
+                    return $next($request, $response);
+                }
             }
             return $response->withJson("no se ha enviado ningun token", 400);
         }
@@ -202,7 +230,7 @@
                     $request = $request->withAttribute('lugar', $id);
                 }
                 else{
-                    return $response->withJson('No se han enviado datos',400);
+                    return $response->withJson('datos incorrectos',400);
                 }
                 return $next($request, $response);
             }

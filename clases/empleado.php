@@ -97,6 +97,9 @@
             $consulta->bindValue(":id", $id, PDO::PARAM_INT);
             $consulta->setFetchMode(PDO::FETCH_CLASS, "empleado");
             $consulta->execute();
+            if($consulta->rowCount() == 0){
+                return false;
+            }
             $empleado = $consulta->fetch();
             return $empleado;
         }
@@ -123,47 +126,38 @@
             if($entrada){
                 
                 $consulta = $objetoAccesoDatos->retornarConsulta("INSERT INTO loginempleados (idempleado, dia, entrada) 
-                                                                  VALUES (:id,  DATE_FORMAT(NOW(),'%Y:%m:%d'), DATE_FORMAT(NOW(),'%H:%i:%s') ) ");
+                                                                  VALUES (:id,  DATE_FORMAT((SELECT CONVERT_TZ(NOW(), '+00:00', '-02:56')),'%Y:%m:%d'), DATE_FORMAT((SELECT CONVERT_TZ(NOW(), '+00:00', '-02:56')),'%H:%i:%s') ) ");
                 
             }
             else {
-                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida= DATE_FORMAT(NOW(),'%H:%i:%s') WHERE salida = '00:00:00' AND idempleado=:id");
+                $consulta = $objetoAccesoDatos->retornarConsulta("UPDATE loginempleados SET salida= DATE_FORMAT((SELECT CONVERT_TZ(NOW(), '+00:00', '-02:56')),'%H:%i:%s') WHERE salida = '00:00:00' AND idempleado=:id");
             }
-            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
+            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT); 
             return $consulta->execute();
         }
-        public static function logueos($id=null){
-            $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            if(isset($id)){
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
-                                                                  WHERE loginempleados.idempleado = empleados.id AND id = :id");
-                $consulta->bindValue(":id", $id, PDO::PARAM_INT);
-            }
-            else{
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT idempleado as id, empleados.usuario as usuario, empleados.activo as activo, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
-                                                                  WHERE loginempleados.idempleado = empleados.id");
-            }
-            $consulta->execute();
-            
-            return $consulta->fetchAll();
-        }
-
-        public function operaciones($desde, $hasta= NULL){
+        public  function logueos($id, $desde, $hasta = NULL){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $desde = $desde."%";
             if(!isset($hasta)){
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE entrada LIKE :desde AND idempleado = :id");
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT loginempleados.dia as dia, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
+                                                                  WHERE loginempleados.idempleado = :id AND dia LIKE :desde");
+                
             }
-            else{   
+            else{
                 $hasta = $hasta."%";
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT * FROM operaciones WHERE idempleado = :id AND  entrada  BETWEEN :desde AND  :hasta");
-                $consulta->bindValue(':hasta', $hasta, PDO::PARAM_STR);
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT loginempleados.dia as dia, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
+                                                                  WHERE loginempleados.idempleado = :id AND dia BETWEEN :desde AND :hasta");
+                $consulta->bindValue(":hasta", $hasta, PDO::PARAM_STR);
             }
-
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
             $consulta->bindValue(":desde", $desde, PDO::PARAM_STR);
-            $consulta->bindValue(":id", $this->id, PDO::PARAM_INT);
             $consulta->setFetchMode(PDO::FETCH_ASSOC);
-            $consulta->execute();    
+            
+            $consulta->execute();
+            if($consulta->rowCount() == 0){
+                return false;   
+            }
+            
             return $consulta->fetchAll();
         }
     }

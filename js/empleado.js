@@ -30,7 +30,7 @@ function registrarEmpleado(){
                 activo: true,
                 admin: adminNuevo
             }
-        }).then(registrado,error);
+        }).then(registrado,errores);
     })
 }
 
@@ -44,13 +44,21 @@ function traerEmpleados(empleados){
         type: "GET",
         dataType: 'json'
         
-    }).then(empleados, error)
+    }).then(empleados, errores)
 }
 
 function tablaEmpleados(data){
     if(data.exito){
-        var tabla = "<table class=' table table-striped' id='empleadosTable'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Borrar / Modificar </td> </tr> </thead>";
-        tabla += "<tbody>";
+        var tabla = `<table class=' table table-striped' id='empleadosTable'>
+                         <thead>
+                            <tr>
+                                <td> Id </td>
+                                <td> Usuario </td>
+                                <td> Activo </td>
+                                <td> Borrar / Modificar </td>
+                            </tr> 
+                        </thead>
+                        <tbody>`;
         for (var element in data.empleados) {
             var empleado = data.empleados[element];
             if(empleado.activo == 1){
@@ -69,7 +77,11 @@ function tablaEmpleados(data){
 
         $("#info").html(tabla);
         $("#info").ready(function(){
-            $("#empleadosTable").DataTable();    
+            $("#empleadosTable").DataTable({
+                "paging": false,
+                "ordering": false,
+                
+            });    
         });
 
     }
@@ -84,7 +96,7 @@ function borrarEmpleado(idEmpleado){
         dataType: 'json',
         headers: { token : localStorage.getItem('token')},
         
-    }).then(borrado, error)
+    }).then(borrado, errores)
 
 }
 
@@ -142,7 +154,7 @@ function modificarEmpleado(empleado){
                 admin: adminModificado,
                 pass :passModificado,
             }
-        }).then(modificado, error);
+        }).then(modificado, errores);
         
     })
 }
@@ -155,44 +167,92 @@ function modificado(data, status, xhr){
 }
 
 function logueosEmpleados(){
-    $.ajax({
-        url: 'empleados/logueos',
-        headers: { token : localStorage.getItem('token')},
-        type: "GET",
-    }).then(tablaLogueos, error);
+    traerEmpleados(logueosDatos);
+    
+    /*                                      PARA DESCARGAR ARCHIVO.
+    var local ='/TPProgramcion-laboratorioIII2017/';
+    var urlDownload = window.location.protocol+ '//' +  window.location.host + local+'/empleados/logueos/reporte/' + localStorage.getItem('token') +'/23';
+    var anchor = "<a href ='"+ urlDownload +"' download  id='excelEmpleados'>algo </a>";
+    $("#info").append(anchor);
+    
+    $("#info").ready(function(){
+        $("#excelEmpleados").click();
+    });
+    */    
+
 }
 
-function tablaLogueos(data, status, xhr){
+function logueosDatos(data, status, xhr){
+    if(xhr.status == 200){
+        
+        var opciones= "<div class='form-group'>";
+        opciones+= "    <label for='selectLogueos'> id </label>";
+        opciones+= "    <select class='form-control' id='selectLogueos'> </select> </div>";
+        opciones+= traerDate("logueosDesde") + traerDate("logueosHasta");
+        opciones+= "<button class='btn btn-primary' onclick='buscarLogueos()'> Buscar </button>";
+        
+
+        $("#info").html(opciones);
+        $("#opciones").ready(function(){
+            var empleados = data.empleados;
+            var ids = empleados.map(function(empleado){
+                return empleado.id;
+            });
+            cargarSelect('#selectLogueos', ids);
+        });
+    }
+}
+
+function buscarLogueos(){
+    $("#usados").remove();
+    var idEmpleado = $("#selectLogueos").val();
+    var fechaDesde = "/" + $("#logueosDesdeInput").val();
+    var fechaHasta = $("#logueosHastaInput").val();
+    if(fechaHasta){
+        fechaHasta  ="/" + fechaHasta;
+    }
+    else{
+        fechaHasta ="";
+    }
+    sessionStorage.setItem('link', idEmpleado+fechaDesde+fechaHasta);
+    $.ajax({
+        url: 'empleados/logueos/' + idEmpleado + fechaDesde + fechaHasta,
+        headers: {token : localStorage.getItem('token')},
+        dataType:'json',
+        success:tablaLogueos,
+        error: errores
+    });
+}
+    
+
+
+function tablaLogueos(data, status, xhr, link){
     
     if(xhr.status == 200){
-        var tabla = "<table class=' table table-striped' id='logueosTable'> <thead> <tr> <td> Id </td> <td> Usuario </td> <td> Activo </td> <td> Entrada </td> <td> salida </td> </tr> </thead>";
-            tabla += "<tbody>";
-            for (var element in data) {
-                var empleado = data[element];
-                if(empleado.activo){
-                    empleado.activo = "Activo";
-                }
-                else{
-                    empleado.activo = "Suspendido";
-                }
-                tabla += "<tr> <td>" + empleado.id + "</td> <td>" + empleado.usuario + "</td> <td>" + empleado.activo + "</td> <td>" + empleado.entrada + "</td> <td>" + empleado.salida + "</td>";
+        var local = "/";
+        var urlDownload = window.location.protocol+ '//' +  window.location.host + local+'reportes/logueos/' + localStorage.getItem('token') +"/" + sessionStorage.getItem('link');
 
+        var tabla = `<div class="row" id="usados">`;
+        tabla += "<table class=' table table-striped' id='logueosTable'> <thead> <tr> <td> Dia </td> <td> Entrada </td> <td> Salida </td> </tr> </thead>";
+        tabla += "<tbody>";
+            for (var element in data.operaciones) {
+                var operacion = data.operaciones[element];
+                tabla += "<tr> <td>" + operacion.dia + "</td> <td>" + operacion.entrada + "</td> <td>" + operacion.salida + "</td> </tr>";
             }
-            tabla+= "</tbody> </table>";
-
-            $("#info").html(tabla);
-            $("#info").ready(function(){
-                $("#logueosTable").DataTable();    
-            });
-            
+        tabla+= "</tbody> </table> ";
+        tabla+= "<a class='btn' href='"+ urlDownload +"' download>Exportar</a> </div>";
+        $("#info").append(tabla);
+        $("#info").ready(function(){
+            $("#logueosTable").DataTable();    
+        });
+    }
+    else if(xhr.status == 206){
+        error206(data);
     }
     
 
 }
 
-var timePicker = $(function () {
-    $('#datetimepicker1').datetimepicker();
-});
 
 function actualizarEmpleado(idEmpleado){
     
@@ -202,7 +262,7 @@ function actualizarEmpleado(idEmpleado){
         type:"PATCH",
         dataType: 'json',
         
-    }).then(actualizado,error);
+    }).then(actualizado,errores);
 }
 function actualizado(data){
     if(data.exito){
@@ -289,32 +349,73 @@ function operacionesDatos(data,status, xhr){
             var ids = empleados.map(function(empleado){
                 return empleado.id;
             });
-            console.log(ids);
             cargarSelect('#selectOperaciones', ids);
         });
     }
 }
 
 function buscarOperaciones(){
+    $("#usados").remove();
     var idEmpleado = $("#selectOperaciones").val();
     var fechaDesde= "/" + $("#operacionesDesde").val();
     var fechaHasta = $("#operacionesHasta").val();
-    console.log(fechaHasta);
+    
     if(fechaHasta){
          fechaHasta = "/" + $("#operacionesHasta").val();
     }
     else{
          fechaHasta ="";
     }
-
+    sessionStorage.setItem('link', idEmpleado+fechaDesde+fechaHasta);
     $.ajax({
         url:'empleados/operaciones/'+idEmpleado + fechaDesde + fechaHasta,
         headers: { token : localStorage.getItem('token')},
         type:"GET",
         dataType:"json"
-    }).then(tablaOperaciones, error);
+    }).then(tablaOperaciones, errores);
 }
 
 function tablaOperaciones(data, status, xhr){
-    console.log(data);
+    if(xhr.status == 200){
+        var datos = `<div class="row" id="usados">
+                        <dl class="dl-horizontal text-center">
+                            <dt> id </dt>
+                            <dd> ${data.id} </dd>
+                            <dt> Nombre </dt>
+                            <dd> ${data.nombre} </dt>
+                            <dt> Apellido </dt>
+                            <dd> ${data.apellido} </dt>
+                            <dt> Activo </dt>
+                            <dd> ${data.activo} </dt>
+                        </dl>
+                    `;
+        datos += ` <table class= " table table-striped">
+                        <thead>
+                            <tr>
+                                <td> Entrada </td>
+                                <td> Salida </td>
+                                <td> Precio </td>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+        var local = "";
+        var urlDownload = window.location.protocol+ '//' +  window.location.host + local+'reportes/operaciones/' + localStorage.getItem('token') +"/" + sessionStorage.getItem('link');
+
+        for (var key in data.operaciones) {
+                var operacion = data.operaciones[key];
+                datos +=`<tr>
+                            <td> ${operacion.entrada} </td>
+                            <td> ${operacion.salida} </td>
+                            <td> ${operacion.precio} </td>
+                         </tr>`;
+            }
+        datos += "</tbody> </table> ";
+        datos+= "<a class='btn' href='"+ urlDownload +"' download>Exportar</a> </div>";
+        $("#principal").append(datos);
+    }
+    else if(xhr.status == 206) {
+        error206(data);
+    }
+    
+
 }

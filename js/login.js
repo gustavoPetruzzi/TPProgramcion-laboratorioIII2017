@@ -10,9 +10,9 @@ function logueado(data,status, xhr){
         if(data.admin == 1){
             $("#empleados").removeClass("hidden");
             $("#cocheras").removeClass("hidden");
+            $("#autos").removeClass("hidden");
         }
         $("#estacionamiento").removeClass("hidden");
-        $("#operaciones").removeClass("hidden");
         desloguear();
     }
     else{
@@ -37,6 +37,7 @@ function deslogueado(data){
         $("#estacionamiento").addClass("hidden");
         $("#operaciones").addClass("hidden");
         $("#cocheras").addClass("hidden");
+        $("#autos").addClass("hidden");
         $("#info").html("");
         $("#precios").html("");
         $("#respuesta").html("");
@@ -45,7 +46,7 @@ function deslogueado(data){
         loguear();
     }
     else{
-        console.info(data)
+        alert(data);
     }
 }
 
@@ -66,7 +67,7 @@ function loguear(){
             type:"POST",
             data: { usuario : usuario, pass: pass},
 
-        }).then(logueado, error)
+        }).then(logueado, errores)
     })
 }
 function desloguear(){
@@ -76,6 +77,6 @@ function desloguear(){
             url:urlLogout,
             type:"GET",
             headers: { token : localStorage.getItem('token')},
-        }).then(deslogueado, error)
+        }).then(deslogueado, errores)
     })
 }

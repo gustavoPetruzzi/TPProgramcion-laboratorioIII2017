@@ -77,8 +77,9 @@
             $retorno['exito'] = false;
             $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET salida = NOW() WHERE patente= :patente AND salida = '0000-00-00 00:00:00'");
             $consulta->bindValue(":patente", $patente, PDO::PARAM_STR);
+            $consulta->execute();
 
-            if($consulta->execute()){
+            if($consulta->rowCount() !=0){
                 $precio = $this->calcularPrecio($patente);
                 $consulta = $objetoAccesoDatos->RetornarConsulta("UPDATE operaciones SET precio = :precio WHERE patente= :patente AND precio = 0");
                 $consulta->bindValue(":precio", $precio, PDO::PARAM_STR);
@@ -89,6 +90,10 @@
                     $retorno['auto'] = auto::buscar($patente);
                     $retorno['exito'] = true;
                 }
+            }
+            else{
+                $retorno['exito'] = false;
+                $retorno['mensaje'] = "Patente no localizada";
             }
             return $retorno;
         }
@@ -183,13 +188,13 @@
             return $consulta->fetch();
         }
                             /* FUNCIONES PRIVADAS */
-        private static function traerPatentes(){
+        public static function traerPatentes(){
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
-            $consulta =$objetoAccesoDatos->RetornarConsulta("SELECT lugar, patente FROM operaciones WHERE salida = '00:00:00'");
+            $consulta =$objetoAccesoDatos->RetornarConsulta("SELECT lugar, patente FROM operaciones WHERE salida = '0000-00-00 00:00:00'");
             $consulta->execute();
             return $consulta->fetchAll();
         }
-        private static function asignarPatentes($lugares, $patentes){
+        public static function asignarPatentes($lugares, $patentes){
             $function = function ($lugar, $clave,$patente ){
                 if($lugar->getNumero() == $patente['lugar']){
                     $lugar->setPatente($patente['patente']);

@@ -56,16 +56,19 @@ function sacar(informacion){
         headers: { token : localStorage.getItem('token')},
         type:'DELETE',
         dataType: 'json',        
-    }).then(sacado, error)   
+    }).then(sacado, errores)   
 }
 function sacado(data, status, xhr){
     if(xhr.status == 200){
         estacionamiento();
         var sacado  = "<h3 class='text-success text-center'> Salida </h3>"
-        sacado += "<p> <b> Patente </b> " + data.auto[0].patente + "</p>";
-        sacado += "<p> <b> Color </b> " + data.auto[0].color + "</p>";
-        sacado += "<p> <b> Marca </b> " + data.auto[0].marca + "</p>";
+        sacado += "<p> <b> Patente </b> " + data.auto.patente + "</p>";
+        sacado += "<p> <b> Color </b> " + data.auto.color + "</p>";
+        sacado += "<p> <b> Marca </b> " + data.auto.marca + "</p>";
         sacado += "<h4 class='text-success text-center'> Precio: " + data.precio + "</h4>"; 
+    }
+    else if(xhr.status == 206) {
+        alert(data);
     }
     $("#respuesta").html(sacado);
 }
@@ -81,7 +84,7 @@ function eventEstacionar(){
             type:'POST',
             dataType: 'json',
             data: {lugar: lugarAuto, patente: patenteAuto, color: colorAuto, marca: marcaAuto}
-        }).then(estacionado, error);
+        }).then(estacionado, errores);
     })
 }
 
@@ -97,7 +100,7 @@ function salidaAuto(){
 }
 function estacionado(data,status, xhr){
     if(xhr.status == 200){
-        alert(estacionado);
+        alert("estacionado");
         estacionamiento();
     }else{
         alert(data);
@@ -110,7 +113,7 @@ function estacionamiento(){
         headers: { token : localStorage.getItem('token')},
         type:'GET',
         dataType:'json',
-    }).then(estacionamientOk,error)
+    }).then(estacionamientOk,errores)
 }
 
 function estacionamientOk(data, status, xhr){

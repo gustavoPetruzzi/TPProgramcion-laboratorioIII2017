@@ -61,6 +61,10 @@
             $consulta->bindValue(":numero", $numero, PDO::PARAM_INT);
             $consulta->setFetchMode(PDO::FETCH_CLASS, 'lugar');
             $consulta->execute();
+
+            if($consulta->rowCount() == 0){
+                return false;
+            }
             return $consulta->fetch();
         }
 

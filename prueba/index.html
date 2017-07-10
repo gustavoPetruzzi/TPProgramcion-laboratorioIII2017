@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-->                                        PRUEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAA                            </!-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -20,6 +21,7 @@
     <script src="js/index.js"> </script>
     <script src="js/cocheras.js"> </script>
     <script src="js/autos.js"> </script>
+    <script src="js/prueba.js"></script>
     <title>Estacionamiento</title>
 </head>
 <body>
@@ -128,6 +130,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="" class=""  onclick="traerEmpleados(tablaEmpleados); return false;">Empleados</a></li>
                         <li><a href="" class="" onclick="registrarEmpleado(); return false;">Agregar</a></li>
+                        <li><a href="" class="" onclick="registrarEmpleadoPrueba(); return false;">Prueba Agregar</a></li>
                         <li><a href="" class="" onclick="logueosEmpleados(); return false;">Logueos</a></li>
                         <li><a href="" class="" onclick="operaciones(); return false;">operaciones</a></li>
                     </ul>
@@ -137,7 +140,8 @@
                     <a id="estacionamiento" class="dropdown-toggle hidden" data-toggle="dropdown" href="#">Estacionamiento</a>
                     <ul class="dropdown-menu">
                         <li><a href="" class=""  onclick="estacionamiento(); return false;">Lugares</a></li>
-                        <!--<li><a href="" class="" onclick="modalEstacionar(); return false;">Estacionar</a></li>-->
+                        <li><a href="" class="" onclick="pruebaEstacionar(); return false;">Prueba Estacionar</a></li>
+                        <li><a href="" class="" onclick="pruebaSalida(); return false;">Prueba salida</a></li>
                         <li><a href="" class="" onclick="modalSalida(); return false;">Salida</a></li>                        
                     </ul>
                 </li>
@@ -157,6 +161,13 @@
                         <li><a href="" class="" onclick="masUsada(); return false;">Mas usada</a></li>
                         <li><a href="" class="" onclick="menosUsada(); return false;">Menos usada</a></li>
                         <li><a href="" class="" onclick="nunca(); return false;">Nunca Usada</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a id="pruebaLoguear" class="dropdown-toggle" data-toggle="dropdown" href="#">loguear</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="" class="" onclick="admin(); return false;">admin</a></li>
+                        <li><a href="" class="" onclick="user(); return false;">user</a></li>
                     </ul>
                 </li>
 
