@@ -139,13 +139,13 @@
             $objetoAccesoDatos = accesoDatos::DameUnObjetoAcceso();
             $desde = $desde."%";
             if(!isset($hasta)){
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT loginempleados.dia as dia, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT loginempleados.dia as dia, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`  
                                                                   WHERE loginempleados.idempleado = :id AND dia LIKE :desde");
                 
             }
             else{
                 $hasta = $hasta."%";
-                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT loginempleados.dia as dia, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados`, `empleados` 
+                $consulta = $objetoAccesoDatos->retornarConsulta("SELECT loginempleados.dia as dia, loginempleados.entrada as entrada, loginempleados.salida as salida FROM `loginempleados` 
                                                                   WHERE loginempleados.idempleado = :id AND dia BETWEEN :desde AND :hasta");
                 $consulta->bindValue(":hasta", $hasta, PDO::PARAM_STR);
             }

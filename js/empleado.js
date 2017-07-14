@@ -229,7 +229,7 @@ function buscarLogueos(){
 function tablaLogueos(data, status, xhr, link){
     
     if(xhr.status == 200){
-        var local = "/";
+        var local = "/TPProgramcion-laboratorioIII2017/";
         var urlDownload = window.location.protocol+ '//' +  window.location.host + local+'reportes/logueos/' + localStorage.getItem('token') +"/" + sessionStorage.getItem('link');
 
         var tabla = `<div class="row" id="usados">`;

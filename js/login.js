@@ -1,9 +1,11 @@
 function logueado(data,status, xhr){
     if(xhr.status = 200){
         localStorage.setItem('token', data.token);
-        var htmlLogueado = '<h4 class="navbar-text"> Bienvenido  ' +  data.usuario + ' </h4>';
-        htmlLogueado += '  <button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>';
         
+        var htmlLogueado = `<button class="btn btn-default navbar-btn" type="button" id="desLogin"> Salir </button>`;
+        var usuario = `<h3 class="text-center"> Bienvenido ${data.usuario} </h3>
+                        <img src="images/banana.gif" class="img-responsive" >`;
+        $("#infoUsuario").html(usuario);
         estacionamiento();
         $("#log").html(htmlLogueado);
         $("#log").attr('id','logout');
@@ -25,12 +27,19 @@ function logueado(data,status, xhr){
 
 function deslogueado(data){
     if(data.exito){
-        var htmlDeslogueado =' <form class="navbar-form navbar-right" >';
-        htmlDeslogueado +='<div class="form-group">';
-        htmlDeslogueado +=  '<input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuario"> </div>';
-        htmlDeslogueado +='<div class="form-group">';
-        htmlDeslogueado +=  '<input type="password" class="form-control" placeholder="password" name="pass" id="pass"> </div>';
-        htmlDeslogueado +='<button class="btn btn-default" type="button" id="login"><span class="glyphicon glyphicon-log-in"></span> Login </button> </form>'
+
+        var htmlDeslogueado =`<form id="log" class="navbar-form">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuario">
+                                </div>
+            
+                                <div class="form-group">
+                                    <input type="password" class="form-control" placeholder="password" name="pass" id="pass">
+                                </div> 
+                                <button class="btn btn-default" type="button" id="login"><span class="glyphicon glyphicon-log-in"></span> Login </button>
+                
+                                </form>
+            </div>`;
         $("#logout").html(htmlDeslogueado);
         $("#logout").attr('id', 'log');
         $("#empleados").addClass('hidden');
@@ -38,6 +47,7 @@ function deslogueado(data){
         $("#operaciones").addClass("hidden");
         $("#cocheras").addClass("hidden");
         $("#autos").addClass("hidden");
+        $("#infoUsuario").html("");
         $("#info").html("");
         $("#precios").html("");
         $("#respuesta").html("");

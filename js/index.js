@@ -11,9 +11,19 @@ $(document).ready( function (){
     $('a').click(function(){
         $("#usados").remove();
         $("#respuesta").html("");
-    })
+    });
+    
 });
 
+$(document).ajaxStart(function () {
+    $(".btn").attr("disabled", true);
+    $("li").addClass("disabled");
+});
+
+$(document).ajaxStop(function() {
+        $(".btn").attr("disabled", false);
+        $("li").removeClass("disabled");
+});
 
 function cargarSelect(id, elementos) {
     $.each(elementos, function (value) {   
@@ -62,6 +72,7 @@ function errores(xhr, status, errorThrown){
             alert("Un error ha ocurrido en el servidor");
             break;
         case 511:
+            alert(xhr.responseText);
             var htmlDeslogueado =' <form class="navbar-form navbar-right" >';
             htmlDeslogueado +='<div class="form-group">';
             htmlDeslogueado +=  '<input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuario"> </div>';
@@ -82,6 +93,7 @@ function errores(xhr, status, errorThrown){
             $("#opciones").html("");
             loguear();
         default:
+            alert(xhr.responseText);
             break;
     }
 }

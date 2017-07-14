@@ -172,14 +172,21 @@ class empleadoApi extends empleado
                         ->setCellValue('C'.$i, $value['salida']);
             $i++;                           
         }
+        $letra = 'A';
+        for ($i=0; $i < 6; $i++) { 
+            $objetoPHPExcel->getActiveSheet()
+                           ->getColumnDimension($letra++)
+                           ->setAutoSize(true);
+        }
+        
 
         $objetoPHPExcel->getActiveSheet()->setTitle('Logueos');
 
         $objetoPHPExcel->setActiveSheetIndex(0);
-
-// Redirect output to a client’s web browser (Excel2007)
+        $nombre = "registros-".$empleado->usuario."-".$request->getAttribute('desde').".xlsx";
+        // Redirect output to a client’s web browser (Excel2007)
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="registrosLogueos.xlsx"');
+        header('Content-Disposition: attachment;filename="'.$nombre.'"');
         header('Cache-Control: max-age=0');
         // If you're serving to IE 9, then the following may be needed
         header('Cache-Control: max-age=1');

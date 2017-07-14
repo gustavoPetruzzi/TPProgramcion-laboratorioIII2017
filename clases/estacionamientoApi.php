@@ -11,6 +11,7 @@
     class estacionamientoApi extends estacionamiento 
     {
         public function lugares($request, $response, $args){
+            sleep(5);
             $estacionamiento = estacionamiento::traerEstacionamiento();
             $retorno['precios'] = $estacionamiento;
             $retorno['lugares'] = $estacionamiento->traerLugares();
