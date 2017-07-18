@@ -4,11 +4,47 @@ function registrado(data){
         alert("empleado Registrado");
     }
 }
+function validatorRegistrar(){
+    $("#register").validator({
+        framework: 'bootstrap',
+        exclude:'disabled',
+        icon :{
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields:{
+            id: {
+                validators: {
+                    notEmpty: {
+                        message:'El id es requerido'
+                    }
+                }
+            },
 
+            nombre: {
+                validators: {
+                    notEmpty: {
+                        message:'El nombre es requerido'
+                    }
+                }
+            }
+        }
+
+    })
+    .on('success.form.bv', function(e){
+        $('#success_message').slideDown({ opacity: "show" }, "slow") // Do something ...
+            $('#contact_form').data('bootstrapValidator').resetForm();
+        e.preventDefault();
+
+    })
+}
 function registrarEmpleado(){
     $('#agregarEmpleado').modal('show');
     $("#modificar").attr('id', 'register');
-    $("#register").click(function(){
+    /*
+    $("#register").submit(function(e){
+		
         var nombreNuevo = $("#nombreNuevo").val();
         var apellidoNuevo = $("#apellidoNuevo").val();
         var usuarioNuevo = $("#usuarioNuevo").val();
@@ -31,7 +67,11 @@ function registrarEmpleado(){
                 admin: adminNuevo
             }
         }).then(registrado,errores);
+		e.preventDefault();
+		return false;
+      
     })
+    */  
 }
 
 

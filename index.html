@@ -9,10 +9,11 @@
     <script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
     <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"> </script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"> </script>
+    <script src="bower_components\bootstrap-validator\dist\validator.js"> </script>
     <script type="text/javascript" src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
     <link rel="stylesheet" href="bower_components\datatables.net-bs\css\dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="styleshee" href="bower_components\datatables.net-buttons-bs\css\buttons.bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components\datatables.net-buttons-bs\css\buttons.bootstrap.min.css">
     <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
     <link rel="stylesheet" href="css/index.css">
     <script src="js/estacionamiento.js"> </script>
@@ -33,29 +34,34 @@
                     <h4 class="modal-title">Empleado</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <input type="text" class="form-control hidden" placeholder="id" name="id" id="idEmpleado" disabled>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="nombre" name="nombre" id="nombreNuevo">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="apellido" name="apellido" id="apellidoNuevo">
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuarioNuevo">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" class="form-control" placeholder="clave" name="clave" id="clave">
-                    </div>
-                    <div class="form-group">
-                        <label for="adminNuevo">Admin</label>  
-                        <input type="checkbox" class="form-control" id="adminNuevo">
-                    </div>  
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default" type="button" data-dismiss="modal" id="register" name="modalEmpleado"> Registrar </button>
-                    
+                    <form method="POST" action="#" class="form-horizontal" role="form"  enctype="multipart/form-data" id="register">
+                        <div class="form-group">
+                            <input  type="text" class="form-control hidden" placeholder="id" name="id" id="idEmpleado" disabled>
+                        </div>
+                        <div class="form-group">
+                            <input  type="text" class="form-control" placeholder="nombre" name="nombre" id="nombreNuevo">
+                        </div>
+                        <div class="form-group">
+                            <input  type="text" class="form-control" placeholder="apellido" name="apellido" id="apellidoNuevo">
+                        </div>
+                        <div class="form-group">
+                            <input  type="text" class="form-control" placeholder="usuario" name="usuario" id="usuarioNuevo" required>
+                        </div>
+                        <div class="form-group">
+                            <input required type="password" class="form-control" placeholder="clave" name="clave" id="clave">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminNuevo">Admin</label>  
+                            <input required type="checkbox" class="form-control" id="adminNuevo">
+                        </div>
+                        <div class="form-group">
+                            <input required type="file" class="form-control" id="idFoto" name="foto">
+                        </div> 
+						<div class="form-group">
+							<button class="btn btn-default" type="submit"   name="modalEmpleado"> Registrar </button>
+						</div>
+                        
+                    </form>
                 </div>
             </div>
 
@@ -191,6 +197,7 @@
                 <div class="col-sm-9" id="info"></div>
                 <div class="col-sm-3" id="estado" >
                     <div id="infoUsuario"> </div>
+                    <img id="previewFoto" />
                     <div id="precios"> </div>
                     <div id="respuesta" hidden> </div>
                 </div>

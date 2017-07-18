@@ -7,6 +7,7 @@ $(document).ready( function (){
     modalEmpleado();
     eventEstacionar();
     salidaAuto();
+    validatorRegistrar();
     modalEstacionarOnClose();
     $('a').click(function(){
         $("#usados").remove();
