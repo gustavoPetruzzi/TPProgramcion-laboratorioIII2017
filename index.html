@@ -29,42 +29,57 @@
     <div id="agregarEmpleado" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Empleado</h4>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="#" class="form-horizontal" role="form"  enctype="multipart/form-data" id="register">
-                        <div class="form-group">
-                            <input  type="text" class="form-control hidden" placeholder="id" name="id" id="idEmpleado" disabled>
-                        </div>
-                        <div class="form-group">
-                            <input  type="text" class="form-control" placeholder="nombre" name="nombre" id="nombreNuevo">
-                        </div>
-                        <div class="form-group">
-                            <input  type="text" class="form-control" placeholder="apellido" name="apellido" id="apellidoNuevo">
-                        </div>
-                        <div class="form-group">
-                            <input  type="text" class="form-control" placeholder="usuario" name="usuario" id="usuarioNuevo" required>
-                        </div>
-                        <div class="form-group">
-                            <input required type="password" class="form-control" placeholder="clave" name="clave" id="clave">
-                        </div>
-                        <div class="form-group">
-                            <label for="adminNuevo">Admin</label>  
-                            <input required type="checkbox" class="form-control" id="adminNuevo">
-                        </div>
-                        <div class="form-group">
-                            <input required type="file" class="form-control" id="idFoto" name="foto">
-                        </div> 
+				<form method="POST" action="#" class="form-horizontal" role="form" data-toggle="validator"  enctype="multipart/form-data" id="register">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Empleado</h4>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<input  type="text" class="form-control hidden" placeholder="id" name="id" id="idEmpleado" disabled>
+						</div>
+						
+						<div class="form-group has-feedback">
+
+							<input  type="text" class="form-control" placeholder="nombre" name="nombre" id="nombreNuevo" data-error="El nombre es requerido" required>
+							<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+							<div class="help-block with-errors"></div>
+						</div>
+						
+						<div class="form-group has-feedback">
+							<input  type="text" class="form-control" placeholder="apellido" name="apellido" id="apellidoNuevo" data-error="El apellido es requerido" required>
+							<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+							<div class="help-block with-errors"></div>
+						</div>
+						
+						<div class="form-group has-feedback">
+							<div>
+								<input type="text" class="form-control" placeholder="usuario" name="usuario" id="usuarioNuevo" data-error="El usuario es requerido" required>
+								<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+								<div class="help-block with-errors"></div>
+							</div>
+						</div>
+						<div class="form-group has-feedback">
+							<input type="password" class="form-control" placeholder="clave" name="clave" id="clave" data-error="clave invalida" required>
+							<span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+							<div class="help-block">Minimo 4 caracteres</div>
+							<div class="help-block with-errors"></div>
+						</div>
+						
+						<div class="form-group">
+							<label for="adminNuevo">Admin</label>  
+							<input  type="checkbox" class="form-control" id="adminNuevo">
+						</div>
+						<div class="form-group">
+							<input required type="file" class="form-control" id="idFoto" name="foto">
+						</div> 
 						<div class="form-group">
 							<button class="btn btn-default" type="submit"   name="modalEmpleado"> Registrar </button>
 						</div>
-                        
-                    </form>
-                </div>
-            </div>
-
+					</div>
+				</form>
+			</div>
         </div>
     </div>
     <!-- Fin Modal Usuario-->
